@@ -24,10 +24,7 @@ def render():
 
     with col2:
         st.write("")
-        if st.button(
-            "Get Quote",
-            use_container_width=True,
-        ):
+        if st.button("Get Quote", use_container_width=True):
             st.session_state.quote = search_quote(ticker)
 
     quote = st.session_state.quote
@@ -40,28 +37,22 @@ def render():
 
         c1.metric(
             "Price",
-            format_price(
-                quote.get("price")
-            ),
+            format_price(quote.get("price"))
         )
 
         c2.metric(
             "Change",
-            quote.get("percent", "-"),
+            quote.get("percent", "-")
         )
 
         c3.metric(
             "Volume",
-            format_volume(
-                quote.get("volume")
-            ),
+            format_volume(quote.get("volume"))
         )
 
         c4.metric(
             "Previous Close",
-            format_price(
-                quote.get("previous_close")
-            ),
+            format_price(quote.get("previous_close"))
         )
 
     st.divider()
@@ -77,18 +68,18 @@ def render():
     with left:
         st.metric(
             "Announcement",
-            score["announcement"],
+            score["announcement"]
         )
 
         st.metric(
             "Technical",
-            score["technical"],
+            score["technical"]
         )
 
     with right:
         st.metric(
             "Overall",
-            score["overall"],
+            score["overall"]
         )
 
         st.success(
@@ -99,52 +90,81 @@ def render():
 
     st.subheader("Latest ASX Announcements")
 
-    announcements = get_announcements(10)
+    announcements = get_announcements(5)
 
-    if announcements:
+    for item in announcements:
 
-        for item in announcements:
+        category = item["category"]
 
-            category = item["category"]
+        if category == "Major Contract":
+            icon = "🟢"
 
-            if category == "Major Contract":
-                icon = "🟢"
+        elif category == "Quarterly":
+            icon = "🟡"
 
-            elif category == "Quarterly":
-                icon = "🟡"
+        elif category in (
+            "Trading Halt",
+            "Capital Raising",
+            "Director Selling",
+        ):
+            icon = "🔴"
 
-            elif category in [
-                "Capital Raising",
-                "Trading Halt",
-                "Director Selling",
-            ]:
-                icon = "🔴"
+        else:
+            icon = "⚪"
 
-            else:
-                icon = "⚪"
-
-            st.markdown(
-                f"""
-**{icon} {item['title']}**
-
-*{item['published']}*
-
-Category: **{category}**
-
----
-"""
-            )
-
-    else:
-
-        st.info(
-            "No announcements available."
+        st.markdown(
+            f"**{icon} {item['title']}**"
         )
+        st.caption(item["published"])
+
+    st.divider()
 
     st.subheader("Watchlist")
 
     for code in DEFAULT_WATCHLIST:
-        st.write(f"• {code}")
+
+        quote = search_quote(code.replace(".AX", ""))
+
+        if quote:
+
+            change = quote.get("percent", "0%")
+
+            try:
+                value = float(
+                    change.replace("%", "")
+                )
+
+                if value > 0:
+                    icon = "🟢"
+
+                elif value < 0:
+                    icon = "🔴"
+
+                else:
+                    icon = "⚪"
+
+            except Exception:
+                icon = "⚪"
+
+            c1, c2, c3 = st.columns([2, 2, 2])
+
+            c1.write(code)
+
+            c2.write(
+                format_price(
+                    quote.get("price")
+                )
+            )
+
+            c3.write(
+                f"{icon} {change}"
+            )
+
+        else:
+
+            st.write(code)
+
+    st.divider()
 
     st.caption(
         f"{APP_NAME} v{VERSION}"
