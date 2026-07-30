@@ -1,45 +1,65 @@
 import streamlit as st
 
-# Configure the page
 st.set_page_config(
     page_title="MomentumHQ",
     page_icon="📈",
     layout="wide"
 )
 
-# Header
 st.title("📈 MomentumHQ")
-st.subheader("AI-powered ASX Momentum Trading Assistant")
-
-# Welcome message
-st.success("🎉 Congratulations! Your first Streamlit application is running.")
-
-# Summary metrics
-col1, col2, col3 = st.columns(3)
-
-with col1:
-    st.metric(label="Market Status", value="Ready")
-
-with col2:
-    st.metric(label="High Priority Alerts", value="0")
-
-with col3:
-    st.metric(label="Trade Candidates", value="0")
+st.caption("AI-powered ASX Momentum Trading Assistant")
 
 st.divider()
 
-st.header("Project Roadmap")
+col1, col2, col3, col4 = st.columns(4)
 
-tasks = [
-    "Live ASX Announcements",
-    "AI News Summaries",
-    "Momentum Scoring",
-    "Watchlists",
-    "Telegram Alerts",
-    "Trading Journal",
-]
+with col1:
+    st.metric("Market Status", "🟢 Ready")
 
-for task in tasks:
-    st.checkbox(task, value=False)
+with col2:
+    st.metric("High Priority Alerts", "0")
 
-st.info("Version 0.1 - Welcome to MomentumHQ")
+with col3:
+    st.metric("Trade Candidates", "0")
+
+with col4:
+    st.metric("Watchlist", "0")
+
+st.divider()
+
+left, right = st.columns([2,1])
+
+with left:
+
+    st.subheader("🔥 High Priority Alerts")
+
+    st.info("No high priority announcements.")
+
+    st.subheader("⭐ Momentum Candidates")
+
+    st.dataframe(
+        {
+            "Ticker": [],
+            "Score": [],
+            "Action": []
+        },
+        use_container_width=True
+    )
+
+    st.subheader("📰 Latest ASX Announcements")
+
+    st.info("Waiting for live announcement feed...")
+
+with right:
+
+    st.subheader("📊 Market Movers")
+
+    st.info("Coming soon")
+
+    st.subheader("👀 Watchlist")
+
+    st.info("No watchlist yet.")
+
+st.divider()
+
+st.success("MomentumHQ Version 0.2")
