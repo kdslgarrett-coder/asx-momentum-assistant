@@ -1,210 +1,228 @@
 import streamlit as st
-import feedparser
-import pandas as pd
 
-# -------------------------------------------------------
+from config import APP_NAME, VERSION
+from styles import load_css
+from market import search_quote, format_price, format_volume
+
+
+# -------------------------------------------------
 # Page Configuration
-# -------------------------------------------------------
+# -------------------------------------------------
 
 st.set_page_config(
-    page_title="MomentumHQ",
+    page_title=APP_NAME,
     page_icon="📈",
-    layout="wide"
+    layout="wide",
 )
 
-# -------------------------------------------------------
-# Header
-# -------------------------------------------------------
+load_css()
 
-st.title("📈 MomentumHQ")
-st.caption("AI-powered ASX Momentum Trading Assistant")
+
+# -------------------------------------------------
+# Session State
+# -------------------------------------------------
+
+if "quote" not in st.session_state:
+    st.session_state.quote = None
+
+
+# -------------------------------------------------
+# Header
+# -------------------------------------------------
+
+st.markdown(f"<div class='main-title'>{APP_NAME}</div>", unsafe_allow_html=True)
+
+st.markdown(
+    f"<div class='subtitle'>Professional ASX Momentum Scanner &nbsp;&nbsp; v{VERSION}</div>",
+    unsafe_allow_html=True,
+)
 
 st.divider()
 
-# -------------------------------------------------------
-# Summary Metrics
-# -------------------------------------------------------
 
-col1, col2, col3, col4 = st.columns(4)
+# -------------------------------------------------
+# Search
+# -------------------------------------------------
+
+st.markdown("## 🔎 Ticker Search")
+
+col1, col2 = st.columns([4, 1])
 
 with col1:
-    st.metric("Market Status", "🟢 Ready")
+    ticker = st.text_input(
+        "ASX Code",
+        placeholder="Example: BHP",
+        label_visibility="collapsed",
+    )
 
 with col2:
-    st.metric("High Priority Alerts", "4")
 
-with col3:
-    st.metric("Trade Candidates", "3")
+    get_quote = st.button(
+        "Get Quote",
+        use_container_width=True,
+    )
 
-with col4:
-    st.metric("Watchlist", "12")
+
+if get_quote:
+
+    if ticker.strip() == "":
+        st.warning("Please enter an ASX ticker.")
+    else:
+
+        with st.spinner("Retrieving market data..."):
+
+            quote = search_quote(ticker)
+
+            if quote:
+                st.session_state.quote = quote
+            else:
+                st.error("Unable to retrieve market data.")
+
 
 st.divider()
 
-# -------------------------------------------------------
-# Sample Data
-# -------------------------------------------------------
 
-alerts = pd.DataFrame(
-    [
-        ["09:18", "CNB", "Trading Halt Lifted", "🔴 High"],
-        ["09:41", "MLX", "Resource Upgrade", "🟠 Medium"],
-        ["10:12", "VEA", "Broker Upgrade", "🟡 Low"],
-        ["10:35", "CAY", "Exploration Results", "🟠 Medium"],
-    ],
-    columns=["Time", "Ticker", "Announcement", "Priority"],
-)
+# -------------------------------------------------
+# Market Snapshot
+# -------------------------------------------------
 
-candidates = pd.DataFrame(
-    [
-        ["CNB", 96, "BUY"],
-        ["MLX", 91, "WATCH"],
-        ["VEA", 88, "WATCH"],
-    ],
-    columns=["Ticker", "Score", "Action"],
-)
+st.markdown("## 📊 Market Snapshot")
 
-left, right = st.columns([2, 1])
+quote = st.session_state.quote
 
-# =======================================================
-# LEFT COLUMN
-# =======================================================
+if quote is None:
+
+    st.info("Search for an ASX company to begin.")
+
+else:
+
+    c1, c2, c3, c4 = st.columns(4)
+
+    with c1:
+        st.metric(
+            "Price",
+            format_price(quote["price"]),
+        )
+
+    with c2:
+        st.metric(
+            "Change",
+            quote["change"],
+            quote["percent"],
+        )
+
+    with c3:
+        st.metric(
+            "Volume",
+            format_volume(quote["volume"]),
+        )
+
+    with c4:
+        st.metric(
+            "Previous Close",
+            format_price(quote["previous_close"]),
+        )
+
+
+st.divider()
+
+
+# -------------------------------------------------
+# Momentum Score
+# -------------------------------------------------
+
+st.markdown("## ⚡ Momentum Score")
+
+left, middle, right = st.columns(3)
+
+announcement_score = 0
+technical_score = 0
+overall_score = announcement_score + technical_score
 
 with left:
+    st.metric(
+        "Announcement Score",
+        announcement_score,
+    )
 
-    st.subheader("🔥 High Priority Alerts")
-    st.dataframe(alerts, use_container_width=True, hide_index=True)
+with middle:
+    st.metric(
+        "Technical Score",
+        technical_score,
+    )
 
-    st.subheader("⭐ Momentum Candidates")
-    st.dataframe(candidates, use_container_width=True, hide_index=True)
+with right:
+    st.metric(
+        "Overall Score",
+        overall_score,
+    )
 
-    st.subheader("📰 Latest ASX Announcements")
 
-announcement_df = pd.DataFrame(
-    columns=[
-        "Time",
-        "Ticker",
-        "Headline",
-        "Momentum",
-        "Recommendation",
-    ]
+# -------------------------------------------------
+# Recommendation
+# -------------------------------------------------
+
+if overall_score >= 60:
+
+    recommendation = "🟢 BUY"
+
+elif overall_score >= 30:
+
+    recommendation = "🟡 WATCH"
+
+else:
+
+    recommendation = "🔴 IGNORE"
+
+st.markdown("### Recommendation")
+
+st.success(recommendation)
+
+
+st.divider()
+
+
+# -------------------------------------------------
+# Latest Announcements
+# -------------------------------------------------
+
+st.markdown("## 📢 Latest Announcements")
+
+st.info(
+    "Live ASX announcements will appear here in the next sprint."
 )
 
+
+st.divider()
+
+
+# -------------------------------------------------
+# Watchlist
+# -------------------------------------------------
+
+st.markdown("## ⭐ Watchlist")
+
+watchlist = [
+    "BHP",
+    "FMG",
+    "RIO",
+    "CBA",
+    "NST",
+]
+
 st.dataframe(
-    announcement_df,
+    watchlist,
     use_container_width=True,
     hide_index=True,
 )
-    # ---------------------------------------------------
-    # Momentum Scoring Engine
-    # ---------------------------------------------------
 
-    def score_announcement(
-        announcement,
-        price_above_ema9,
-        ema9_above_ema20,
-        above_vwap,
-        volume_ratio,
-        turnover,
-    ):
 
-        score = 0
-        reasons = []
-
-        announcement_scores = {
-            "Trading Halt Lifted": 40,
-            "Major Acquisition": 35,
-            "Major Contract": 35,
-            "Resource Upgrade": 30,
-            "Drill Results": 30,
-            "Quarterly": 20,
-            "Broker Upgrade": 15,
-            "Capital Raising": -30,
-            "Director Selling": -20,
-            "Suspension": -40,
-        }
-
-        if announcement in announcement_scores:
-            pts = announcement_scores[announcement]
-            score += pts
-            reasons.append((announcement, pts))
-
-        if price_above_ema9:
-            score += 10
-            reasons.append(("Above EMA9", 10))
-
-        if ema9_above_ema20:
-            score += 10
-            reasons.append(("EMA9 above EMA20", 10))
-
-        if above_vwap:
-            score += 10
-            reasons.append(("Above VWAP", 10))
-
-        if volume_ratio >= 3:
-            score += 10
-            reasons.append(("High Volume Ratio", 10))
-
-        if turnover >= 5:
-            score += 10
-            reasons.append(("Turnover > $5M", 10))
-
-        return score, reasons
-
-    score, reasons = score_announcement(
-        announcement="Trading Halt Lifted",
-        price_above_ema9=True,
-        ema9_above_ema20=True,
-        above_vwap=True,
-        volume_ratio=5,
-        turnover=12,
-    )
-
-    st.divider()
-
-    st.subheader("🧠 Momentum Score Test")
-
-    st.metric("Score", score)
-
-    for reason, pts in reasons:
-        st.write(f"✅ {reason}: +{pts}")
-
-    st.divider()
-
-    st.subheader("📰 RSS Feed Test")
-
-    feed = feedparser.parse(
-        "https://www.afr.com/rss/markets"
-    )
-
-    if feed.entries:
-        for article in feed.entries[:5]:
-            st.write(f"• {article.title}")
-    else:
-        st.error("No RSS feed found.")
-
-# =======================================================
-# RIGHT COLUMN
-# =======================================================
-
-with right:
-
-    st.subheader("📊 Market Movers")
-
-    st.metric("Top Gainer", "CNB +18.4%")
-    st.metric("Top Volume", "MLX")
-
-    st.subheader("👀 Watchlist")
-
-    st.write("• CNB")
-    st.write("• MLX")
-    st.write("• VEA")
-    st.write("• CAY")
-
-# -------------------------------------------------------
+# -------------------------------------------------
 # Footer
-# -------------------------------------------------------
+# -------------------------------------------------
 
 st.divider()
 
-st.success("MomentumHQ Version 0.2.2")
+st.caption(
+    f"{APP_NAME} • Version {VERSION}"
+)
