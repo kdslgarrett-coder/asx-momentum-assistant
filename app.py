@@ -79,8 +79,22 @@ with left:
     st.dataframe(candidates, use_container_width=True, hide_index=True)
 
     st.subheader("📰 Latest ASX Announcements")
-    st.info("Live announcement feed coming in Version 0.3")
 
+announcement_df = pd.DataFrame(
+    columns=[
+        "Time",
+        "Ticker",
+        "Headline",
+        "Momentum",
+        "Recommendation",
+    ]
+)
+
+st.dataframe(
+    announcement_df,
+    use_container_width=True,
+    hide_index=True,
+)
     # ---------------------------------------------------
     # Momentum Scoring Engine
     # ---------------------------------------------------
