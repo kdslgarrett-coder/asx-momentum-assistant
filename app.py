@@ -1,5 +1,10 @@
 import streamlit as st
+import feedparser
 import pandas as pd
+
+# -------------------------------------------------------
+# Page Configuration
+# -------------------------------------------------------
 
 st.set_page_config(
     page_title="MomentumHQ",
@@ -7,10 +12,18 @@ st.set_page_config(
     layout="wide"
 )
 
+# -------------------------------------------------------
+# Header
+# -------------------------------------------------------
+
 st.title("📈 MomentumHQ")
 st.caption("AI-powered ASX Momentum Trading Assistant")
 
 st.divider()
+
+# -------------------------------------------------------
+# Summary Metrics
+# -------------------------------------------------------
 
 col1, col2, col3, col4 = st.columns(4)
 
@@ -28,6 +41,10 @@ with col4:
 
 st.divider()
 
+# -------------------------------------------------------
+# Sample Data
+# -------------------------------------------------------
+
 alerts = pd.DataFrame(
     [
         ["09:18", "CNB", "Trading Halt Lifted", "🔴 High"],
@@ -35,7 +52,7 @@ alerts = pd.DataFrame(
         ["10:12", "VEA", "Broker Upgrade", "🟡 Low"],
         ["10:35", "CAY", "Exploration Results", "🟠 Medium"],
     ],
-    columns=["Time", "Ticker", "Announcement", "Priority"]
+    columns=["Time", "Ticker", "Announcement", "Priority"],
 )
 
 candidates = pd.DataFrame(
@@ -44,10 +61,14 @@ candidates = pd.DataFrame(
         ["MLX", 91, "WATCH"],
         ["VEA", 88, "WATCH"],
     ],
-    columns=["Ticker", "Score", "Action"]
+    columns=["Ticker", "Score", "Action"],
 )
 
-left, right = st.columns([2,1])
+left, right = st.columns([2, 1])
+
+# =======================================================
+# LEFT COLUMN
+# =======================================================
 
 with left:
 
@@ -60,83 +81,97 @@ with left:
     st.subheader("📰 Latest ASX Announcements")
     st.info("Live announcement feed coming in Version 0.3")
 
-    # ----------------------------------------
-# Momentum Scoring Engine
-# ----------------------------------------
+    # ---------------------------------------------------
+    # Momentum Scoring Engine
+    # ---------------------------------------------------
 
-def score_announcement(
-    announcement,
-    price_above_ema9,
-    ema9_above_ema20,
-    above_vwap,
-    volume_ratio,
-    turnover,
-):
-    score = 0
-    reasons = []
+    def score_announcement(
+        announcement,
+        price_above_ema9,
+        ema9_above_ema20,
+        above_vwap,
+        volume_ratio,
+        turnover,
+    ):
 
-    # Announcement scoring
-    announcement_scores = {
-        "Trading Halt Lifted": 40,
-        "Major Acquisition": 35,
-        "Major Contract": 35,
-        "Resource Upgrade": 30,
-        "Drill Results": 30,
-        "Quarterly": 20,
-        "Broker Upgrade": 15,
-        "Capital Raising": -30,
-        "Director Selling": -20,
-        "Suspension": -40,
-    }
+        score = 0
+        reasons = []
 
-    if announcement in announcement_scores:
-        pts = announcement_scores[announcement]
-        score += pts
-        reasons.append((announcement, pts))
+        announcement_scores = {
+            "Trading Halt Lifted": 40,
+            "Major Acquisition": 35,
+            "Major Contract": 35,
+            "Resource Upgrade": 30,
+            "Drill Results": 30,
+            "Quarterly": 20,
+            "Broker Upgrade": 15,
+            "Capital Raising": -30,
+            "Director Selling": -20,
+            "Suspension": -40,
+        }
 
-    # Technicals
+        if announcement in announcement_scores:
+            pts = announcement_scores[announcement]
+            score += pts
+            reasons.append((announcement, pts))
 
-    if price_above_ema9:
-        score += 10
-        reasons.append(("Above EMA9", 10))
+        if price_above_ema9:
+            score += 10
+            reasons.append(("Above EMA9", 10))
 
-    if ema9_above_ema20:
-        score += 10
-        reasons.append(("EMA9 above EMA20", 10))
+        if ema9_above_ema20:
+            score += 10
+            reasons.append(("EMA9 above EMA20", 10))
 
-    if above_vwap:
-        score += 10
-        reasons.append(("Above VWAP", 10))
+        if above_vwap:
+            score += 10
+            reasons.append(("Above VWAP", 10))
 
-    # Liquidity
+        if volume_ratio >= 3:
+            score += 10
+            reasons.append(("High Volume Ratio", 10))
 
-    if volume_ratio >= 3:
-        score += 10
-        reasons.append(("High Volume Ratio", 10))
+        if turnover >= 5:
+            score += 10
+            reasons.append(("Turnover > $5M", 10))
 
-    if turnover >= 5:
-        score += 10
-        reasons.append(("Turnover > $5M", 10))
+        return score, reasons
 
-    return score, reasons
+    score, reasons = score_announcement(
+        announcement="Trading Halt Lifted",
+        price_above_ema9=True,
+        ema9_above_ema20=True,
+        above_vwap=True,
+        volume_ratio=5,
+        turnover=12,
+    )
 
-score, reasons = score_announcement(
-    announcement="Trading Halt Lifted",
-    price_above_ema9=True,
-    ema9_above_ema20=True,
-    above_vwap=True,
-    volume_ratio=5,
-    turnover=12,
-)
+    st.divider()
 
-st.divider()
+    st.subheader("🧠 Momentum Score Test")
 
-st.subheader("🧠 Momentum Score Test")
+    st.metric("Score", score)
 
-st.metric("Score", score)
+    for reason, pts in reasons:
+        st.write(f"✅ {reason}: +{pts}")
 
-for reason, pts in reasons:
-    st.write(f"✅ {reason}: +{pts}")
+    st.divider()
+
+    st.subheader("📰 RSS Feed Test")
+
+    feed = feedparser.parse(
+        "https://www.afr.com/rss/markets"
+    )
+
+    if feed.entries:
+        for article in feed.entries[:5]:
+            st.write(f"• {article.title}")
+    else:
+        st.error("No RSS feed found.")
+
+# =======================================================
+# RIGHT COLUMN
+# =======================================================
 
 with right:
 
@@ -152,6 +187,10 @@ with right:
     st.write("• VEA")
     st.write("• CAY")
 
+# -------------------------------------------------------
+# Footer
+# -------------------------------------------------------
+
 st.divider()
 
-st.success("MomentumHQ Version 0.2.1")
+st.success("MomentumHQ Version 0.2.2")
