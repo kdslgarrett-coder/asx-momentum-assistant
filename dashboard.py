@@ -1,9 +1,10 @@
 """
 MomentumHQ Dashboard
-Version 2.0.0
+Version 2.1.0
 """
 
 import streamlit as st
+import plotly.graph_objects as go
 
 from config import (
     APP_NAME,
@@ -14,6 +15,7 @@ from config import (
 
 from market import (
     search_quote,
+    get_history,
     format_price,
     format_volume,
     format_market_cap,
@@ -31,100 +33,133 @@ def render():
     # Search
     # -----------------------------
 
-    if "quote" not in st.session_state:
-        st.session_state.quote = None
+    if "ticker" not in st.session_state:
+        st.session_state.ticker = DEFAULT_TICKER
 
-    col1, col2 = st.columns([4, 1])
+    ticker = st.text_input(
+        "ASX Code",
+        value=st.session_state.ticker,
+    ).upper()
 
-    with col1:
+    if ticker != st.session_state.ticker:
+        st.session_state.ticker = ticker
 
-        ticker = st.text_input(
-            "ASX Code",
-            value=DEFAULT_TICKER,
-        ).upper()
+    quote = search_quote(st.session_state.ticker)
 
-    with col2:
-
-        st.write("")
-        search = st.button(
-            "Search",
-            use_container_width=True,
-        )
-
-    if search:
-
-        with st.spinner("Retrieving market data..."):
-
-            st.session_state.quote = search_quote(ticker)
-
-    quote = st.session_state.quote
+    if quote is None:
+        st.error("Unable to retrieve market data.")
+        return
 
     # -----------------------------
     # Quote
     # -----------------------------
 
-    if quote:
+    st.subheader(quote["company"])
 
-        st.subheader(quote["company"])
+    c1, c2, c3, c4 = st.columns(4)
 
-        row1 = st.columns(4)
+    c1.metric(
+        "Price",
+        format_price(quote["price"]),
+    )
 
-        with row1[0]:
-            st.metric(
-                "Price",
-                format_price(quote["price"]),
+    c2.metric(
+        "Change",
+        quote["percent"],
+    )
+
+    c3.metric(
+        "Volume",
+        format_volume(quote["volume"]),
+    )
+
+    c4.metric(
+        "Previous Close",
+        format_price(
+            quote["previous_close"]
+        ),
+    )
+
+    c1, c2, c3 = st.columns(3)
+
+    c1.metric(
+        "Day High",
+        format_price(
+            quote["high"]
+        ),
+    )
+
+    c2.metric(
+        "Day Low",
+        format_price(
+            quote["low"]
+        ),
+    )
+
+    c3.metric(
+        "Market Cap",
+        format_market_cap(
+            quote["market_cap"]
+        ),
+    )
+
+    st.divider()
+
+    # -----------------------------
+    # Chart
+    # -----------------------------
+
+    st.subheader("Price Chart")
+
+    history = get_history(st.session_state.ticker)
+
+    if history is not None:
+
+        fig = go.Figure()
+
+        fig.add_trace(
+            go.Candlestick(
+                x=history.index,
+                open=history["Open"],
+                high=history["High"],
+                low=history["Low"],
+                close=history["Close"],
+                name="Price",
             )
+        )
 
-        with row1[1]:
-            st.metric(
-                "Change",
-                quote["percent"],
+        fig.add_trace(
+            go.Scatter(
+                x=history.index,
+                y=history["EMA9"],
+                name="EMA 9",
+                line=dict(width=2),
             )
+        )
 
-        with row1[2]:
-            st.metric(
-                "Volume",
-                format_volume(quote["volume"]),
+        fig.add_trace(
+            go.Scatter(
+                x=history.index,
+                y=history["EMA20"],
+                name="EMA 20",
+                line=dict(width=2),
             )
+        )
 
-        with row1[3]:
-            st.metric(
-                "Previous Close",
-                format_price(
-                    quote["previous_close"]
-                ),
-            )
+        fig.update_layout(
+            height=650,
+            xaxis_rangeslider_visible=False,
+            margin=dict(
+                l=20,
+                r=20,
+                t=20,
+                b=20,
+            ),
+        )
 
-        row2 = st.columns(3)
-
-        with row2[0]:
-            st.metric(
-                "Day High",
-                format_price(
-                    quote["high"]
-                ),
-            )
-
-        with row2[1]:
-            st.metric(
-                "Day Low",
-                format_price(
-                    quote["low"]
-                ),
-            )
-
-        with row2[2]:
-            st.metric(
-                "Market Cap",
-                format_market_cap(
-                    quote["market_cap"]
-                ),
-            )
-
-    else:
-
-        st.info(
-            "Search for an ASX stock to begin."
+        st.plotly_chart(
+            fig,
+            use_container_width=True,
         )
 
     st.divider()
@@ -135,7 +170,7 @@ def render():
 
     st.subheader("Watchlist")
 
-    table = []
+    rows = []
 
     for symbol in DEFAULT_WATCHLIST:
 
@@ -143,10 +178,12 @@ def render():
 
         if q:
 
-            table.append(
+            rows.append(
                 {
                     "Ticker": symbol.replace(".AX", ""),
-                    "Price": format_price(q["price"]),
+                    "Price": format_price(
+                        q["price"]
+                    ),
                     "Change": q["percent"],
                     "Volume": format_volume(
                         q["volume"]
@@ -154,21 +191,10 @@ def render():
                 }
             )
 
-        else:
-
-            table.append(
-                {
-                    "Ticker": symbol.replace(".AX", ""),
-                    "Price": "-",
-                    "Change": "-",
-                    "Volume": "-",
-                }
-            )
-
     st.dataframe(
-        table,
-        use_container_width=True,
+        rows,
         hide_index=True,
+        use_container_width=True,
     )
 
     st.divider()
