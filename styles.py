@@ -1,109 +1,70 @@
 """
-Custom CSS styling for MomentumHQ
+MomentumHQ Styling
+Version 2.0.0
 """
 
 import streamlit as st
 
 
 def load_css():
+
     st.markdown(
         """
         <style>
 
-        /* -------------------------------------------------
-           Main App
-        -------------------------------------------------- */
-
-        .stApp {
-            background-color: #0E1117;
-            color: #FAFAFA;
+        .block-container {
+            padding-top: 1.2rem;
+            padding-bottom: 2rem;
+            max-width: 1200px;
         }
 
-        /* -------------------------------------------------
-           Header
-        -------------------------------------------------- */
-
-        .main-title {
-            font-size: 42px;
-            font-weight: 700;
+        h1 {
             color: #00C853;
-            margin-bottom: 0px;
+            font-weight: 700;
         }
 
-        .sub-title {
-            font-size: 18px;
-            color: #BBBBBB;
-            margin-top: -10px;
-            margin-bottom: 25px;
+        h2 {
+            color: #1976D2;
+            margin-top: 1rem;
         }
 
-        /* -------------------------------------------------
-           Cards
-        -------------------------------------------------- */
-
-        .metric-card {
-            background-color: #161B22;
-            border: 1px solid #30363D;
+        div[data-testid="stMetric"] {
+            border: 1px solid #E0E0E0;
             border-radius: 12px;
-            padding: 18px;
-            margin-bottom: 15px;
+            padding: 15px;
+            background-color: #FAFAFA;
         }
 
-        /* -------------------------------------------------
-           Section Headers
-        -------------------------------------------------- */
-
-        .section-header {
-            font-size: 24px;
-            font-weight: 600;
-            color: white;
-            padding-top: 10px;
-            padding-bottom: 10px;
-        }
-
-        /* -------------------------------------------------
-           Buy / Watch / Ignore Badges
-        -------------------------------------------------- */
-
-        .buy {
-            color: #00E676;
+        div[data-testid="stMetricValue"] {
+            font-size: 30px;
             font-weight: bold;
         }
 
-        .watch {
-            color: #FFD54F;
-            font-weight: bold;
+        div[data-testid="stMetricLabel"] {
+            font-size: 15px;
+            color: #666666;
         }
 
-        .ignore {
-            color: #FF5252;
-            font-weight: bold;
-        }
-
-        /* -------------------------------------------------
-           DataFrames
-        -------------------------------------------------- */
-
-        div[data-testid="stDataFrame"] {
-            border: 1px solid #30363D;
+        .stButton>button {
+            width: 100%;
             border-radius: 10px;
-            overflow: hidden;
-        }
-
-        /* -------------------------------------------------
-           Buttons
-        -------------------------------------------------- */
-
-        .stButton > button {
-            background-color: #00C853;
-            color: white;
-            border-radius: 8px;
-            border: none;
             font-weight: bold;
+            height: 42px;
         }
 
-        .stButton > button:hover {
-            background-color: #00A844;
+        .watchlist-header {
+            font-size: 20px;
+            font-weight: bold;
+            color: #1976D2;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        .footer {
+            text-align: center;
+            color: grey;
+            font-size: 13px;
+            margin-top: 40px;
         }
 
         </style>

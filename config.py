@@ -1,36 +1,12 @@
 """
-Configuration settings for MomentumHQ
+MomentumHQ Configuration
+Version: 2.0.0
 """
 
-import streamlit as st
-
-# ----------------------------------------------------
-# Application
-# ----------------------------------------------------
-
 APP_NAME = "MomentumHQ"
-VERSION = "1.0.0"
+VERSION = "2.0.0"
 
-# ----------------------------------------------------
-# Alpha Vantage
-# ----------------------------------------------------
-
-def get_api_key():
-    """
-    Returns the Alpha Vantage API key.
-
-    Uses Streamlit Secrets if available.
-    Falls back to a hard-coded key for local development.
-    """
-
-    try:
-        return st.secrets["ALPHA_VANTAGE_API_KEY"]
-    except Exception:
-        return "AWYQGRWXJY6KG3RU"
-
-# ----------------------------------------------------
-# Dashboard
-# ----------------------------------------------------
+DEFAULT_TICKER = "BHP"
 
 DEFAULT_WATCHLIST = [
     "BHP.AX",
@@ -40,29 +16,6 @@ DEFAULT_WATCHLIST = [
     "WDS.AX",
 ]
 
-REFRESH_INTERVAL = 300  # seconds
+REFRESH_SECONDS = 300
 
-# ----------------------------------------------------
-# Momentum Scoring
-# ----------------------------------------------------
-
-ANNOUNCEMENT_SCORES = {
-    "Trading Halt Lifted": 40,
-    "Major Acquisition": 35,
-    "Major Contract": 35,
-    "Resource Upgrade": 30,
-    "Drill Results": 30,
-    "Quarterly": 20,
-    "Broker Upgrade": 15,
-    "Capital Raising": -30,
-    "Director Selling": -20,
-    "Suspension": -40,
-}
-
-TECHNICAL_SCORES = {
-    "Above EMA9": 10,
-    "EMA9 Above EMA20": 10,
-    "Above VWAP": 10,
-    "High Volume": 10,
-    "Turnover": 10,
-}
+CURRENCY = "$"

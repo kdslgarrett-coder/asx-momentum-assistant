@@ -1,9 +1,23 @@
+"""
+MomentumHQ Dashboard
+Version 2.0.0
+"""
+
 import streamlit as st
 
-from config import APP_NAME, VERSION, DEFAULT_WATCHLIST
-from market import search_quote, format_price, format_volume
-from momentum import demo_score
-from announcements import get_announcements
+from config import (
+    APP_NAME,
+    VERSION,
+    DEFAULT_TICKER,
+    DEFAULT_WATCHLIST,
+)
+
+from market import (
+    search_quote,
+    format_price,
+    format_volume,
+    format_market_cap,
+)
 
 
 def render():
@@ -11,161 +25,154 @@ def render():
     st.title(APP_NAME)
     st.caption(f"Version {VERSION}")
 
+    st.divider()
+
+    # -----------------------------
+    # Search
+    # -----------------------------
+
     if "quote" not in st.session_state:
         st.session_state.quote = None
 
-    col1, col2 = st.columns([3, 1])
+    col1, col2 = st.columns([4, 1])
 
     with col1:
+
         ticker = st.text_input(
             "ASX Code",
-            value="BHP"
+            value=DEFAULT_TICKER,
         ).upper()
 
     with col2:
+
         st.write("")
-        if st.button("Get Quote", use_container_width=True):
+        search = st.button(
+            "Search",
+            use_container_width=True,
+        )
+
+    if search:
+
+        with st.spinner("Retrieving market data..."):
+
             st.session_state.quote = search_quote(ticker)
 
     quote = st.session_state.quote
 
+    # -----------------------------
+    # Quote
+    # -----------------------------
+
     if quote:
 
-        st.subheader(quote.get("symbol", ""))
+        st.subheader(quote["company"])
 
-        c1, c2, c3, c4 = st.columns(4)
+        row1 = st.columns(4)
 
-        c1.metric(
-            "Price",
-            format_price(quote.get("price"))
-        )
+        with row1[0]:
+            st.metric(
+                "Price",
+                format_price(quote["price"]),
+            )
 
-        c2.metric(
-            "Change",
-            quote.get("percent", "-")
-        )
+        with row1[1]:
+            st.metric(
+                "Change",
+                quote["percent"],
+            )
 
-        c3.metric(
-            "Volume",
-            format_volume(quote.get("volume"))
-        )
+        with row1[2]:
+            st.metric(
+                "Volume",
+                format_volume(quote["volume"]),
+            )
 
-        c4.metric(
-            "Previous Close",
-            format_price(quote.get("previous_close"))
+        with row1[3]:
+            st.metric(
+                "Previous Close",
+                format_price(
+                    quote["previous_close"]
+                ),
+            )
+
+        row2 = st.columns(3)
+
+        with row2[0]:
+            st.metric(
+                "Day High",
+                format_price(
+                    quote["high"]
+                ),
+            )
+
+        with row2[1]:
+            st.metric(
+                "Day Low",
+                format_price(
+                    quote["low"]
+                ),
+            )
+
+        with row2[2]:
+            st.metric(
+                "Market Cap",
+                format_market_cap(
+                    quote["market_cap"]
+                ),
+            )
+
+    else:
+
+        st.info(
+            "Search for an ASX stock to begin."
         )
 
     st.divider()
 
-    st.subheader("Momentum")
-
-    score = demo_score()
-
-    st.progress(score["overall"] / 100)
-
-    left, right = st.columns(2)
-
-    with left:
-        st.metric(
-            "Announcement",
-            score["announcement"]
-        )
-
-        st.metric(
-            "Technical",
-            score["technical"]
-        )
-
-    with right:
-        st.metric(
-            "Overall",
-            score["overall"]
-        )
-
-        st.success(
-            score["recommendation"]
-        )
-
-    st.divider()
-
-    st.subheader("Latest ASX Announcements")
-
-    announcements = get_announcements(5)
-
-    for item in announcements:
-
-        category = item["category"]
-
-        if category == "Major Contract":
-            icon = "🟢"
-
-        elif category == "Quarterly":
-            icon = "🟡"
-
-        elif category in (
-            "Trading Halt",
-            "Capital Raising",
-            "Director Selling",
-        ):
-            icon = "🔴"
-
-        else:
-            icon = "⚪"
-
-        st.markdown(
-            f"**{icon} {item['title']}**"
-        )
-        st.caption(item["published"])
-
-    st.divider()
+    # -----------------------------
+    # Watchlist
+    # -----------------------------
 
     st.subheader("Watchlist")
 
-    for code in DEFAULT_WATCHLIST:
+    table = []
 
-        quote = search_quote(code.replace(".AX", ""))
+    for symbol in DEFAULT_WATCHLIST:
 
-        if quote:
+        q = search_quote(symbol)
 
-            change = quote.get("percent", "0%")
+        if q:
 
-            try:
-                value = float(
-                    change.replace("%", "")
-                )
-
-                if value > 0:
-                    icon = "🟢"
-
-                elif value < 0:
-                    icon = "🔴"
-
-                else:
-                    icon = "⚪"
-
-            except Exception:
-                icon = "⚪"
-
-            c1, c2, c3 = st.columns([2, 2, 2])
-
-            c1.write(code)
-
-            c2.write(
-                format_price(
-                    quote.get("price")
-                )
-            )
-
-            c3.write(
-                f"{icon} {change}"
+            table.append(
+                {
+                    "Ticker": symbol.replace(".AX", ""),
+                    "Price": format_price(q["price"]),
+                    "Change": q["percent"],
+                    "Volume": format_volume(
+                        q["volume"]
+                    ),
+                }
             )
 
         else:
 
-            st.write(code)
+            table.append(
+                {
+                    "Ticker": symbol.replace(".AX", ""),
+                    "Price": "-",
+                    "Change": "-",
+                    "Volume": "-",
+                }
+            )
+
+    st.dataframe(
+        table,
+        use_container_width=True,
+        hide_index=True,
+    )
 
     st.divider()
 
     st.caption(
-        f"{APP_NAME} v{VERSION}"
+        f"{APP_NAME} • Version {VERSION}"
     )
