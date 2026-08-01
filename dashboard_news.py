@@ -1,16 +1,52 @@
 """
 MomentumHQ Dashboard News
-Version 2.3.0
+Version 2.4.0
 """
 
 import streamlit as st
 
 from announcements import get_announcements
+from analysis import analyse
+
+
+def show_card(item):
+
+    ai = analyse(item["category"])
+
+    with st.container(border=True):
+
+        st.markdown(
+            f"### {ai['icon']} {item['title']}"
+        )
+
+        st.caption(item["published"])
+
+        c1, c2 = st.columns(2)
+
+        c1.metric(
+            "Sentiment",
+            ai["sentiment"],
+        )
+
+        c2.metric(
+            "Confidence",
+            ai["confidence"],
+        )
+
+        st.markdown(
+            f"**Summary**\n\n{ai['summary']}"
+        )
+
+        st.markdown(
+            f"**Reason**\n\n{ai['reason']}"
+        )
 
 
 def render(ticker):
 
-    st.subheader("📢 Latest Company Announcements")
+    st.subheader(
+        "📢 Company Announcements"
+    )
 
     company = get_announcements(
         ticker,
@@ -21,17 +57,7 @@ def render(ticker):
 
         for item in company:
 
-            st.markdown(
-                f"""
-**{item['title']}**
-
-{item['published']}
-
-{item['category']}
-
----
-"""
-            )
+            show_card(item)
 
     else:
 
@@ -39,7 +65,11 @@ def render(ticker):
             "No company announcements found."
         )
 
-    st.subheader("🔥 Latest Market Announcements")
+    st.divider()
+
+    st.subheader(
+        "🔥 Market Announcements"
+    )
 
     market = get_announcements(
         limit=5,
@@ -49,17 +79,7 @@ def render(ticker):
 
         for item in market:
 
-            st.markdown(
-                f"""
-**{item['title']}**
-
-{item['published']}
-
-{item['category']}
-
----
-"""
-            )
+            show_card(item)
 
     else:
 

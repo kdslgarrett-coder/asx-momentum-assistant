@@ -1,10 +1,10 @@
 """
 MomentumHQ Configuration
-Version: 2.2.0
+Version: 2.3.0
 """
 
 APP_NAME = "MomentumHQ"
-VERSION = "2.2.0"
+VERSION = "2.3.0"
 
 DEFAULT_TICKER = "BHP"
 
