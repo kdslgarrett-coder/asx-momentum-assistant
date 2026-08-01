@@ -15,12 +15,14 @@ from config import (
 
 from market import (
     search_quote,
-    get_history,
-    calculate_indicators,
     format_price,
     format_volume,
     format_market_cap,
 )
+
+from history import get_history
+
+from indicators import calculate_indicators
 
 
 def render():
@@ -53,6 +55,9 @@ def render():
     history = get_history(ticker)
 
     indicators = calculate_indicators(history)
+
+    if indicators:
+        history = indicators["history"]
 
     # -----------------------------
     # Quote
