@@ -15,7 +15,10 @@ from market import (
 
 from history import get_history
 from indicators import calculate_indicators
-
+from score import (
+    calculate_opportunity_score,
+    get_rating,
+)
 
 def render(ticker):
 
@@ -146,16 +149,21 @@ def render(ticker):
             format_price(indicators["vwap"]),
         )
 
-        c2.metric(
-            "Technical Score",
-            f"{score}/40",
+        # Version 2.5.0
+        # Announcement, volume and risk scoring will be connected
+        # in later steps. For now we use the calculated technical score.
+        opportunity_score = calculate_opportunity_score(
+            technical_score=score,
+            announcement_score=0,
+            volume_score=0,
+            risk_score=0,
         )
 
-        if score >= 35:
-            st.success("🟢 STRONG BUY")
-        elif score >= 25:
-            st.success("🟢 BUY")
-        elif score >= 15:
-            st.warning("🟡 WATCH")
-        else:
-            st.error("🔴 AVOID")
+        c2.metric(
+            "Opportunity Score",
+            f"{opportunity_score}/100",
+        )
+
+        rating = get_rating(opportunity_score)
+
+        st.success(f"⭐ {rating}")
