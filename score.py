@@ -1,17 +1,25 @@
 """
 MomentumHQ Opportunity Intelligence Engine
-Version 2.5.0
-
-The Opportunity Engine provides:
-
-- Opportunity Score
-- Rating
-- Timing (future)
-- Confidence (future)
-- Explainability (future)
+Version 2.5.1
 """
 
 from typing import Dict
+
+TECHNICAL_MAX = 40
+ANNOUNCEMENT_MAX = 30
+VOLUME_MAX = 10
+RISK_MAX = 10
+
+WEIGHTS = {
+    "technical": 50,
+    "announcement": 30,
+    "volume": 10,
+    "risk": 10,
+}
+
+
+def _clamp(value: int, maximum: int) -> int:
+    return max(0, min(value, maximum))
 
 
 def calculate_opportunity_score(
@@ -20,66 +28,47 @@ def calculate_opportunity_score(
     volume_score: int,
     risk_score: int,
 ) -> int:
-    """
-    Calculate the overall Opportunity Score.
+    technical_score = _clamp(technical_score, TECHNICAL_MAX)
+    announcement_score = _clamp(announcement_score, ANNOUNCEMENT_MAX)
+    volume_score = _clamp(volume_score, VOLUME_MAX)
+    risk_score = _clamp(risk_score, RISK_MAX)
 
-    Weighting (Version 1)
+    score = (
+        (technical_score / TECHNICAL_MAX) * WEIGHTS["technical"]
+        + (announcement_score / ANNOUNCEMENT_MAX) * WEIGHTS["announcement"]
+        + (volume_score / VOLUME_MAX) * WEIGHTS["volume"]
+        + (risk_score / RISK_MAX) * WEIGHTS["risk"]
+    )
 
-    Technical     50%
-    Announcements 30%
-    Volume        10%
-    Risk          10%
-    """
-
-    technical = (technical_score / 40) * 50
-    announcements = (announcement_score / 30) * 30
-    volume = (volume_score / 10) * 10
-    risk = (risk_score / 10) * 10
-
-    score = technical + announcements + volume + risk
-
-    return round(max(0, min(score, 100)))
+    return round(score)
 
 
 def get_rating(score: int) -> str:
-
     if score >= 85:
         return "Exceptional Opportunity"
-
     if score >= 70:
         return "Strong Opportunity"
-
     if score >= 55:
         return "Opportunity"
-
     if score >= 40:
         return "Watch"
-
     return "Avoid"
 
 
 def calculate_timing(minutes: int) -> str:
-
     if minutes <= 30:
         return "Early"
-
     if minutes <= 90:
         return "Building"
-
     if minutes <= 240:
         return "Confirmed"
-
     if minutes <= 480:
         return "Mature"
-
     return "Passed"
 
 
 def calculate_confidence(confirmations: int) -> int:
-
-    confidence = confirmations * 20
-
-    return max(0, min(confidence, 100))
+    return _clamp(confirmations * 20, 100)
 
 
 def explain_score(
@@ -88,12 +77,12 @@ def explain_score(
     volume_score: int,
     risk_score: int,
 ) -> Dict:
-
     return {
-        "Technical": technical_score,
-        "Announcements": announcement_score,
-        "Volume": volume_score,
-        "Risk": risk_score,
+        "Technical": _clamp(technical_score, TECHNICAL_MAX),
+        "Announcements": _clamp(announcement_score, ANNOUNCEMENT_MAX),
+        "Volume": _clamp(volume_score, VOLUME_MAX),
+        "Risk": _clamp(risk_score, RISK_MAX),
+        "Weights": WEIGHTS.copy(),
         "Total": calculate_opportunity_score(
             technical_score,
             announcement_score,
