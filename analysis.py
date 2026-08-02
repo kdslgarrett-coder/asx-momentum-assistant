@@ -2,92 +2,64 @@
 MomentumHQ AI Analysis Engine
 Version 2.5.1
 
-Rule-based announcement analysis with announcement scoring.
+Rule-based announcement analysis with explainable scoring.
 """
 
-RULES = {
-    "Major Contract": {
-        "icon": "🟢",
-        "sentiment": "Positive",
-        "confidence": "High",
-        "score": 28,
-        "summary": "The company has announced a major contract that could increase future revenue.",
-        "reason": "Large customer contracts are generally viewed positively by the market.",
-    },
-    "Drill Results": {
-        "icon": "🟢",
-        "sentiment": "Positive",
-        "confidence": "Medium",
-        "score": 26,
-        "summary": "The company has released exploration or drilling results.",
-        "reason": "Positive exploration results can improve future resource potential.",
-    },
-    "Resource Upgrade": {
-        "icon": "🟢",
-        "sentiment": "Positive",
-        "confidence": "High",
-        "score": 24,
-        "summary": "The company's reported mineral resource has increased.",
-        "reason": "Resource upgrades often improve company value.",
-    },
-    "Quarterly": {
-        "icon": "🟡",
-        "sentiment": "Neutral",
-        "confidence": "Medium",
-        "score": 15,
-        "summary": "Routine quarterly operational update.",
-        "reason": "Further review is required to determine whether results exceeded expectations.",
-    },
-    "Presentation": {
-        "icon": "🔵",
-        "sentiment": "Informational",
-        "confidence": "Low",
-        "score": 5,
-        "summary": "Investor presentation released.",
-        "reason": "Presentations normally summarise existing information.",
-    },
-    "Capital Raising": {
-        "icon": "🔴",
-        "sentiment": "Negative",
-        "confidence": "Medium",
-        "score": 4,
-        "summary": "The company is raising additional capital.",
-        "reason": "Capital raisings may dilute existing shareholders.",
-    },
-    "Trading Halt": {
-        "icon": "🟡",
-        "sentiment": "Neutral",
-        "confidence": "Low",
-        "score": 10,
-        "summary": "Trading has been temporarily halted.",
-        "reason": "A trading halt does not indicate whether future news will be positive or negative.",
-    },
-    "Director Interest": {
-        "icon": "🔵",
-        "sentiment": "Informational",
-        "confidence": "Low",
-        "score": 8,
-        "summary": "Director interest notice released.",
-        "reason": "These announcements are usually regulatory.",
-    },
-    "Other": {
-        "icon": "⚪",
-        "sentiment": "Unknown",
-        "confidence": "Low",
-        "score": 10,
-        "summary": "No automated analysis available.",
-        "reason": "Announcement type not yet recognised.",
-    },
+BASE_RULES = {
+    "Major Contract": ("🟢", "Positive", "High", 18,
+        "The company has announced a major contract that could increase future revenue.",
+        "Large customer contracts are generally viewed positively by the market."),
+    "Drill Results": ("🟢", "Positive", "Medium", 16,
+        "The company has released exploration or drilling results.",
+        "Positive exploration results can improve future resource potential."),
+    "Resource Upgrade": ("🟢", "Positive", "High", 17,
+        "The company's reported mineral resource has increased.",
+        "Resource upgrades often improve company value."),
+    "Quarterly": ("🟡", "Neutral", "Medium", 10,
+        "Routine quarterly operational update.",
+        "Further review is required to determine whether results exceeded expectations."),
+    "Presentation": ("🔵", "Informational", "Low", 3,
+        "Investor presentation released.",
+        "Presentations normally summarise existing information."),
+    "Capital Raising": ("🔴", "Negative", "Medium", 2,
+        "The company is raising additional capital.",
+        "Capital raisings may dilute existing shareholders."),
+    "Trading Halt": ("🟡", "Neutral", "Low", 6,
+        "Trading has been temporarily halted.",
+        "A trading halt does not indicate whether future news will be positive or negative."),
+    "Director Interest": ("🔵", "Informational", "Low", 4,
+        "Director interest notice released.",
+        "These announcements are usually regulatory."),
+    "Other": ("⚪", "Unknown", "Low", 5,
+        "No automated analysis available.",
+        "Announcement type not yet recognised."),
 }
 
+CONFIDENCE_POINTS = {"High": 5, "Medium": 3, "Low": 1}
+SENTIMENT_POINTS = {"Positive": 5, "Neutral": 2, "Informational": 1, "Negative": 0}
+
 def analyse(category):
-    """
-    Returns analysis for an announcement category.
-    """
-    return RULES.get(category, RULES["Other"])
+    icon, sentiment, confidence, base, summary, reason = BASE_RULES.get(
+        category, BASE_RULES["Other"]
+    )
+
+    breakdown = {
+        "Base": base,
+        "Confidence": CONFIDENCE_POINTS[confidence],
+        "Sentiment": SENTIMENT_POINTS[sentiment],
+    }
+
+    score = min(30, sum(breakdown.values()))
+
+    return {
+        "icon": icon,
+        "sentiment": sentiment,
+        "confidence": confidence,
+        "score": score,
+        "breakdown": breakdown,
+        "summary": summary,
+        "reason": reason,
+    }
 
 def get_announcement_score(category):
-    """
-    Returns the announcement score (0-30).
-    """
     return analyse(category)["score"]
