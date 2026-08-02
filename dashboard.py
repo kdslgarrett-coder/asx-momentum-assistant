@@ -1,6 +1,6 @@
 """
 MomentumHQ Dashboard
-Version 2.3.0
+Version 2.5.1
 """
 
 import streamlit as st
@@ -13,6 +13,11 @@ from dashboard_watchlist import render as render_watchlist
 
 def render():
 
+    st.set_page_config(
+        page_title=APP_NAME,
+        layout="wide",
+    )
+
     st.title(APP_NAME)
     st.caption(f"Version {VERSION}")
 
@@ -24,23 +29,24 @@ def render():
     ticker = st.text_input(
         "ASX Code",
         value=st.session_state.ticker,
-    ).upper()
+        help="Enter an ASX ticker symbol (e.g. BHP, FMG, CBA).",
+    ).strip().upper()
 
     st.session_state.ticker = ticker
 
-    tab1, tab2, tab3 = st.tabs([
+    dashboard_tab, announcements_tab, watchlist_tab = st.tabs([
         "📊 Dashboard",
         "📢 Announcements",
         "⭐ Watchlist",
     ])
 
-    with tab1:
+    with dashboard_tab:
         render_home(ticker)
 
-    with tab2:
+    with announcements_tab:
         render_news(ticker)
 
-    with tab3:
+    with watchlist_tab:
         render_watchlist()
 
     st.divider()
