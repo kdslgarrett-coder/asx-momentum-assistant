@@ -36,7 +36,13 @@ BASE_RULES = {
 }
 
 CONFIDENCE_POINTS = {"High": 5, "Medium": 3, "Low": 1}
-SENTIMENT_POINTS = {"Positive": 5, "Neutral": 2, "Informational": 1, "Negative": 0}
+SENTIMENT_POINTS = {
+    "Positive": 5,
+    "Neutral": 2,
+    "Informational": 1,
+    "Negative": 0,
+    "Unknown": 0,
+}
 
 def analyse(category):
     icon, sentiment, confidence, base, summary, reason = BASE_RULES.get(
@@ -45,8 +51,8 @@ def analyse(category):
 
     breakdown = {
         "Base": base,
-        "Confidence": CONFIDENCE_POINTS[confidence],
-        "Sentiment": SENTIMENT_POINTS[sentiment],
+        "Confidence": CONFIDENCE_POINTS.get(confidence, 0),
+        "Sentiment": SENTIMENT_POINTS.get(sentiment, 0),
     }
 
     score = min(30, sum(breakdown.values()))
