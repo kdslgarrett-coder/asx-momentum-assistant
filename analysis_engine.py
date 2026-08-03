@@ -4,26 +4,32 @@ Version 2.6.0-dev
 
 Shared analysis engine for dashboard modules.
 
-Task 11A:
-- Extract the existing technical scoring logic from dashboard_home.py.
+Task 12A:
+- Centralise technical and opportunity analysis.
 - Preserve existing behaviour.
+- Dashboard modules consume this module only.
 """
 
 from typing import Any, Dict, Optional
 
+from analysis import get_announcement_score
+from announcements import get_announcements
 from history import get_history
 from indicators import calculate_indicators
 from market import search_quote
-from score import calculate_opportunity_score, get_rating
+from opportunity_engine import evaluate_opportunity
 
 
 def analyse_stock(ticker: str) -> Optional[Dict[str, Any]]:
     """
-    Analyse a stock and return all information required by the dashboard.
+    Analyse a stock and return all information required by dashboard modules.
 
-    This implementation intentionally preserves the existing behaviour
-    from dashboard_home.py. Only the location of the technical scoring
-    logic has changed.
+    This module is the single source of truth for:
+    - Technical analysis
+    - Announcement scoring
+    - Opportunity evaluation
+
+    Dashboard modules should render these results only.
     """
 
     quote = search_quote(ticker)
@@ -56,9 +62,18 @@ def analyse_stock(ticker: str) -> Optional[Dict[str, Any]]:
         if indicators["rvol"] >= 1.5:
             technical_score += 10
 
-    opportunity_score = calculate_opportunity_score(
+    announcements = get_announcements(ticker, limit=1)
+
+    if announcements:
+        category = announcements[0]["category"]
+    else:
+        category = "Other"
+
+    announcement_score = get_announcement_score(category)
+
+    opportunity = evaluate_opportunity(
         technical_score=technical_score,
-        announcement_score=0,
+        announcement_score=announcement_score,
         volume_score=0,
         risk_score=0,
     )
@@ -67,10 +82,20 @@ def analyse_stock(ticker: str) -> Optional[Dict[str, Any]]:
         "quote": quote,
         "history": history,
         "indicators": indicators,
+
         "technical_score": technical_score,
-        "announcement_score": 0,
+
+        "announcement_category": category,
+        "announcement_score": announcement_score,
+
         "volume_score": 0,
         "risk_score": 0,
-        "opportunity_score": opportunity_score,
-        "rating": get_rating(opportunity_score),
+
+        "opportunity_score": opportunity["score"],
+        "rating": opportunity["rating"],
+        "confidence": opportunity["confidence"],
+        "timing": opportunity["timing"],
+        "strengths": opportunity["strengths"],
+        "risks": opportunity["risks"],
+        "action": opportunity["action"],
     }
