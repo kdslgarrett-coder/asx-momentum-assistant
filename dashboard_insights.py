@@ -1,24 +1,40 @@
 """
 MomentumHQ Dashboard Insights
-Version 2.5.3
+Version 2.6.0-dev
+
+Presentation layer only.
+
+Business logic is provided by analysis_engine.py.
 """
 
 import streamlit as st
-from opportunity_engine import evaluate_opportunity
 
-def render(ticker: str):
-    result = evaluate_opportunity(
-        technical_score=0,
-        announcement_score=0,
-        volume_score=0,
-        risk_score=0,
-    )
+from analysis_engine import analyse_stock
+
+
+def render(ticker: str) -> None:
+    """
+    Render the Momentum Insights panel.
+
+    All scoring and analysis is supplied by analysis_engine.
+    """
+
+    result = analyse_stock(ticker)
+
+    if result is None:
+        st.warning(f"No data available for {ticker}.")
+        return
 
     st.subheader("💡 Momentum Insights")
     st.caption(f"Ticker: {ticker}")
 
+    st.write(
+        f"Latest Announcement Category: **{result['announcement_category']}**"
+    )
+
     c1, c2, c3 = st.columns(3)
-    c1.metric("Opportunity", f"{result['score']}/100")
+
+    c1.metric("Opportunity", f"{result['opportunity_score']}/100")
     c2.metric("Confidence", f"{result['confidence']}%")
     c3.metric("Timing", result["timing"])
 
@@ -28,6 +44,7 @@ def render(ticker: str):
 
     with left:
         st.markdown("### Strengths")
+
         if result["strengths"]:
             for item in result["strengths"]:
                 st.write(f"✅ {item}")
@@ -36,6 +53,7 @@ def render(ticker: str):
 
     with right:
         st.markdown("### Risks")
+
         if result["risks"]:
             for item in result["risks"]:
                 st.write(f"⚠️ {item}")
