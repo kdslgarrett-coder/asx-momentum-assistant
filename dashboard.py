@@ -1,6 +1,6 @@
 """
 MomentumHQ Dashboard
-Version 2.5.1
+Version 2.5.2
 """
 
 import streamlit as st
@@ -8,6 +8,7 @@ import streamlit as st
 from config import APP_NAME, VERSION, DEFAULT_TICKER
 from dashboard_home import render as render_home
 from dashboard_news import render as render_news
+from dashboard_insights import render as render_insights
 from dashboard_watchlist import render as render_watchlist
 
 
@@ -34,9 +35,10 @@ def render():
 
     st.session_state.ticker = ticker
 
-    dashboard_tab, announcements_tab, watchlist_tab = st.tabs([
+    dashboard_tab, announcements_tab, insights_tab, watchlist_tab = st.tabs([
         "📊 Dashboard",
         "📢 Announcements",
+        "💡 Insights",
         "⭐ Watchlist",
     ])
 
@@ -45,6 +47,9 @@ def render():
 
     with announcements_tab:
         render_news(ticker)
+
+    with insights_tab:
+        render_insights(ticker)
 
     with watchlist_tab:
         render_watchlist()

@@ -1,33 +1,46 @@
 """
 MomentumHQ Dashboard Insights
-Version 2.5.2
+Version 2.5.3
 """
 
 import streamlit as st
-
+from opportunity_engine import evaluate_opportunity
 
 def render(ticker: str):
-    """Render the Insights dashboard."""
+    result = evaluate_opportunity(
+        technical_score=0,
+        announcement_score=0,
+        volume_score=0,
+        risk_score=0,
+    )
 
     st.subheader("💡 Momentum Insights")
+    st.caption(f"Ticker: {ticker}")
 
-    st.info(
-        f"""The Insights dashboard is under development.
+    c1, c2, c3 = st.columns(3)
+    c1.metric("Opportunity", f"{result['score']}/100")
+    c2.metric("Confidence", f"{result['confidence']}%")
+    c3.metric("Timing", result["timing"])
 
-Current ticker: **{ticker}**"""
-    )
+    st.success(f"⭐ {result['rating']}")
 
-    st.markdown("### Roadmap")
+    left, right = st.columns(2)
 
-    st.markdown("""
-- Opportunity Summary
-- Technical Strengths
-- Announcement Impact
-- Risk Assessment
-- Suggested Action
-- Overall Confidence
-""")
+    with left:
+        st.markdown("### Strengths")
+        if result["strengths"]:
+            for item in result["strengths"]:
+                st.write(f"✅ {item}")
+        else:
+            st.write("No strengths identified yet.")
 
-    st.success(
-        "The dashboard is connected successfully and ready for future enhancements."
-    )
+    with right:
+        st.markdown("### Risks")
+        if result["risks"]:
+            for item in result["risks"]:
+                st.write(f"⚠️ {item}")
+        else:
+            st.write("No significant risks identified.")
+
+    st.markdown("### Suggested Action")
+    st.info(result["action"])
