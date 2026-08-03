@@ -1,6 +1,6 @@
 """
 MomentumHQ Announcement Classifier
-Version 2.5.3
+Version 2.6.0-dev
 
 Centralised announcement classification engine.
 """
@@ -12,8 +12,24 @@ Rule = Tuple[str, Sequence[str]]
 _RULES: List[Rule] = [
     ("Trading Halt", ["trading halt", "voluntary suspension"]),
     ("Major Contract", ["contract", "agreement", "award"]),
-    ("Resource Upgrade", ["resource", "jorc", "ore reserve"]),
+
+    (
+        "Resource Upgrade",
+        [
+            "resource",
+            "jorc",
+            "ore reserve",
+            "discovery",
+            "gold discovery",
+            "major gold discovery",
+            "mineral discovery",
+            "high grade",
+            "high-grade",
+        ],
+    ),
+
     ("Drill Results", ["drill", "drilling", "assay", "intercept"]),
+
     (
         "Capital Raising",
         [
@@ -23,11 +39,17 @@ _RULES: List[Rule] = [
             "share purchase plan",
         ],
     ),
+
     ("Quarterly", ["quarterly", "appendix 4c", "appendix 5b"]),
+
     ("Presentation", ["presentation", "investor presentation"]),
+
     ("Director Interest", ["director", "appendix 3x", "appendix 3y"]),
+
     ("Dividend", ["dividend"]),
+
     ("Acquisition", ["acquisition", "acquire", "scheme of arrangement"]),
+
     ("Profit Upgrade", ["profit upgrade", "guidance upgrade"]),
 ]
 
@@ -47,13 +69,19 @@ def classify(title: str) -> Dict:
     text = (title or "").lower()
 
     for category, keywords in _RULES:
-        matched_keywords = [keyword for keyword in keywords if keyword in text]
+        matched_keywords = [
+            keyword
+            for keyword in keywords
+            if keyword in text
+        ]
 
         if matched_keywords:
             return {
                 "category": category,
                 "confidence": (
-                    "High" if len(matched_keywords) > 1 else "Medium"
+                    "High"
+                    if len(matched_keywords) > 1
+                    else "Medium"
                 ),
                 "matched_keywords": matched_keywords,
             }
