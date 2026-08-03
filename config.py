@@ -1,6 +1,6 @@
 """
 MomentumHQ Configuration
-VERSION = "2.5.3 Stable"
+Version 2.5.3 Stable
 """
 
 APP_NAME = "MomentumHQ"
