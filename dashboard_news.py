@@ -1,22 +1,32 @@
 """
 MomentumHQ Dashboard News
-Version 2.5.1
+Version 2.6.0-dev
+
+Presentation layer only.
+
+Announcement analysis is provided by analysis_engine.py.
 """
 
 import streamlit as st
 
+from analysis_engine import analyse_announcement
 from announcements import get_announcements
-from analysis import analyse
 
 
 def show_card(item):
-    ai = analyse(item["category"])
+    """Render a single announcement card."""
+
+    st.write(
+        f"DEBUG: {item['title']} | category={item['category']} | analysis={analyse_announcement(item['category'])}"
+    )
+    ai = analyse_announcement(item["category"])
 
     with st.container(border=True):
         st.markdown(f"### {ai['icon']} {item['title']}")
         st.caption(item["published"])
 
         c1, c2, c3 = st.columns(3)
+
         c1.metric("Sentiment", ai["sentiment"])
         c2.metric("Confidence", ai["confidence"])
         c3.metric("Score", f"{ai['score']}/30")
@@ -27,11 +37,14 @@ def show_card(item):
 
             if "breakdown" in ai:
                 st.markdown("**Score Breakdown**")
+
                 for key, value in ai["breakdown"].items():
                     st.write(f"- {key}: {value}")
 
 
-def render(ticker):
+def render(ticker: str) -> None:
+    """Render the News dashboard."""
+
     st.subheader("📢 Company Announcements")
 
     company = get_announcements(ticker, limit=5)
