@@ -1,18 +1,28 @@
 """
 MomentumHQ Announcement Classifier
-Version 2.5.2
+Version 2.5.3
 
 Centralised announcement classification engine.
 """
 
-from typing import Dict, List
+from typing import Dict, List, Sequence, Tuple
 
-_RULES = [
+Rule = Tuple[str, Sequence[str]]
+
+_RULES: List[Rule] = [
     ("Trading Halt", ["trading halt", "voluntary suspension"]),
     ("Major Contract", ["contract", "agreement", "award"]),
     ("Resource Upgrade", ["resource", "jorc", "ore reserve"]),
     ("Drill Results", ["drill", "drilling", "assay", "intercept"]),
-    ("Capital Raising", ["capital raising", "placement", "entitlement offer", "share purchase plan"]),
+    (
+        "Capital Raising",
+        [
+            "capital raising",
+            "placement",
+            "entitlement offer",
+            "share purchase plan",
+        ],
+    ),
     ("Quarterly", ["quarterly", "appendix 4c", "appendix 5b"]),
     ("Presentation", ["presentation", "investor presentation"]),
     ("Director Interest", ["director", "appendix 3x", "appendix 3y"]),
@@ -23,20 +33,29 @@ _RULES = [
 
 
 def classify(title: str) -> Dict:
-    """Classify an announcement title."""
+    """
+    Classify an ASX announcement title.
+
+    Returns:
+        {
+            "category": str,
+            "confidence": str,
+            "matched_keywords": list[str],
+        }
+    """
 
     text = (title or "").lower()
-    matches: List[str] = []
 
     for category, keywords in _RULES:
-        hit = [k for k in keywords if k in text]
-        if hit:
-            matches.extend(hit)
-            confidence = "High" if len(hit) > 1 else "Medium"
+        matched_keywords = [keyword for keyword in keywords if keyword in text]
+
+        if matched_keywords:
             return {
                 "category": category,
-                "confidence": confidence,
-                "matched_keywords": matches,
+                "confidence": (
+                    "High" if len(matched_keywords) > 1 else "Medium"
+                ),
+                "matched_keywords": matched_keywords,
             }
 
     return {
@@ -47,5 +66,8 @@ def classify(title: str) -> Dict:
 
 
 def classify_category(title: str) -> str:
-    """Backward-compatible helper returning only the category."""
+    """
+    Backwards-compatible helper returning only the category.
+    """
+
     return classify(title)["category"]
