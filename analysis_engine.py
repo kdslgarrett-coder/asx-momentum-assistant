@@ -4,20 +4,30 @@ Version 2.6.0-dev
 
 Shared analysis engine for dashboard modules.
 
-Task 12A:
-- Centralise technical and opportunity analysis.
+Task 14A:
+- Centralise technical, opportunity and announcement analysis.
 - Preserve existing behaviour.
 - Dashboard modules consume this module only.
 """
 
 from typing import Any, Dict, Optional
 
-from analysis import get_announcement_score
+from analysis import analyse, get_announcement_score
 from announcements import get_announcements
 from history import get_history
 from indicators import calculate_indicators
 from market import search_quote
 from opportunity_engine import evaluate_opportunity
+
+
+def analyse_announcement(category: str) -> Dict[str, Any]:
+    """
+    Return the standard announcement analysis for a category.
+
+    Dashboard modules should use this helper instead of importing
+    analysis.py directly.
+    """
+    return analyse(category)
 
 
 def analyse_stock(ticker: str) -> Optional[Dict[str, Any]]:
@@ -82,15 +92,11 @@ def analyse_stock(ticker: str) -> Optional[Dict[str, Any]]:
         "quote": quote,
         "history": history,
         "indicators": indicators,
-
         "technical_score": technical_score,
-
         "announcement_category": category,
         "announcement_score": announcement_score,
-
         "volume_score": 0,
         "risk_score": 0,
-
         "opportunity_score": opportunity["score"],
         "rating": opportunity["rating"],
         "confidence": opportunity["confidence"],
