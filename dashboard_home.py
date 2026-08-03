@@ -1,39 +1,36 @@
 """
 MomentumHQ Dashboard Home
-Version 2.3.0
+Version 2.6.0-dev
 """
 
 import streamlit as st
 import plotly.graph_objects as go
 
+from analysis_engine import analyse_stock
 from market import (
-    search_quote,
+    format_market_cap,
     format_price,
     format_volume,
-    format_market_cap,
 )
 
-from history import get_history
-from indicators import calculate_indicators
-from score import (
-    calculate_opportunity_score,
-    get_rating,
-)
 
 def render(ticker):
+    """
+    Render the main dashboard.
 
-    quote = search_quote(ticker)
+    Technical scoring is now provided by analysis_engine.py.
+    Behaviour is intentionally unchanged.
+    """
 
-    if quote is None:
+    analysis = analyse_stock(ticker)
+
+    if analysis is None:
         st.error("Unable to retrieve market data.")
         return
 
-    history = get_history(ticker)
-
-    indicators = calculate_indicators(history)
-
-    if indicators:
-        history = indicators["history"]
+    quote = analysis["quote"]
+    history = analysis["history"]
+    indicators = analysis["indicators"]
 
     st.subheader(quote["company"])
 
@@ -107,23 +104,6 @@ def render(ticker):
 
         st.subheader("Technical Analysis")
 
-        score = 0
-
-        if indicators["trend"] == "Bullish":
-            score += 10
-
-        if quote["price"] > indicators["ema20"]:
-            score += 10
-
-        if quote["price"] > indicators["vwap"]:
-            score += 5
-
-        if 50 <= indicators["rsi"] <= 70:
-            score += 5
-
-        if indicators["rvol"] >= 1.5:
-            score += 10
-
         c1, c2, c3 = st.columns(3)
 
         c1.metric("Trend", indicators["trend"])
@@ -149,21 +129,9 @@ def render(ticker):
             format_price(indicators["vwap"]),
         )
 
-        # Version 2.5.0
-        # Announcement, volume and risk scoring will be connected
-        # in later steps. For now we use the calculated technical score.
-        opportunity_score = calculate_opportunity_score(
-            technical_score=score,
-            announcement_score=0,
-            volume_score=0,
-            risk_score=0,
-        )
-
         c2.metric(
             "Opportunity Score",
-            f"{opportunity_score}/100",
+            f"{analysis['opportunity_score']}/100",
         )
 
-        rating = get_rating(opportunity_score)
-
-        st.success(f"⭐ {rating}")
+        st.success(f"⭐ {analysis['rating']}")
