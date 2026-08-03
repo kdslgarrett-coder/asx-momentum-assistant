@@ -1,18 +1,21 @@
 """
 MomentumHQ Dashboard
-Version 2.5.2
+Version 2.5.3 Stable
 """
 
 import streamlit as st
 
-from config import APP_NAME, VERSION, DEFAULT_TICKER
+from config import APP_NAME, DEFAULT_TICKER, VERSION
 from dashboard_home import render as render_home
-from dashboard_news import render as render_news
 from dashboard_insights import render as render_insights
+from dashboard_news import render as render_news
 from dashboard_watchlist import render as render_watchlist
 
 
-def render():
+def render() -> None:
+    """
+    Render the main MomentumHQ dashboard.
+    """
 
     st.set_page_config(
         page_title=APP_NAME,
@@ -24,23 +27,33 @@ def render():
 
     st.divider()
 
-    if "ticker" not in st.session_state:
-        st.session_state.ticker = DEFAULT_TICKER
+    st.session_state.setdefault("ticker", DEFAULT_TICKER)
 
-    ticker = st.text_input(
-        "ASX Code",
-        value=st.session_state.ticker,
-        help="Enter an ASX ticker symbol (e.g. BHP, FMG, CBA).",
-    ).strip().upper()
+    ticker = (
+        st.text_input(
+            "ASX Code",
+            value=st.session_state.ticker,
+            help="Enter an ASX ticker symbol (e.g. BHP, FMG, CBA).",
+        )
+        .strip()
+        .upper()
+    )
 
     st.session_state.ticker = ticker
 
-    dashboard_tab, announcements_tab, insights_tab, watchlist_tab = st.tabs([
-        "📊 Dashboard",
-        "📢 Announcements",
-        "💡 Insights",
-        "⭐ Watchlist",
-    ])
+    (
+        dashboard_tab,
+        announcements_tab,
+        insights_tab,
+        watchlist_tab,
+    ) = st.tabs(
+        [
+            "📊 Dashboard",
+            "📢 Announcements",
+            "💡 Insights",
+            "⭐ Watchlist",
+        ]
+    )
 
     with dashboard_tab:
         render_home(ticker)
