@@ -1,6 +1,13 @@
 """
 MomentumHQ Dashboard
-Version 2.5.3 Stable
+Version 2.6.0-dev
+
+Application dashboard orchestration.
+
+Task 15:
+- Presentation orchestration only.
+- Dashboard modules own rendering.
+- Preserve existing behaviour.
 """
 
 import streamlit as st
@@ -10,6 +17,13 @@ from dashboard_home import render as render_home
 from dashboard_insights import render as render_insights
 from dashboard_news import render as render_news
 from dashboard_watchlist import render as render_watchlist
+
+TABS = (
+    "📊 Dashboard",
+    "📢 Announcements",
+    "💡 Insights",
+    "⭐ Watchlist",
+)
 
 
 def render() -> None:
@@ -46,14 +60,7 @@ def render() -> None:
         announcements_tab,
         insights_tab,
         watchlist_tab,
-    ) = st.tabs(
-        [
-            "📊 Dashboard",
-            "📢 Announcements",
-            "💡 Insights",
-            "⭐ Watchlist",
-        ]
-    )
+    ) = st.tabs(TABS)
 
     with dashboard_tab:
         render_home(ticker)
