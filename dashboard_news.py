@@ -16,9 +16,6 @@ from announcements import get_announcements
 def show_card(item):
     """Render a single announcement card."""
 
-    st.write(
-        f"DEBUG: {item['title']} | category={item['category']} | analysis={analyse_announcement(item['category'])}"
-    )
     ai = analyse_announcement(item["category"])
 
     with st.container(border=True):
