@@ -11,9 +11,10 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import List
+from typing import List, Tuple
 
 from config import DEFAULT_WATCHLIST
+from market import search_quote
 
 WATCHLIST_FILE = Path("watchlist.json")
 
@@ -22,7 +23,7 @@ def _save(items: List[str]) -> None:
     """Save the watchlist to disk."""
 
     WATCHLIST_FILE.write_text(
-        json.dumps(items, indent=4),
+        json.dumps(sorted(items), indent=4),
         encoding="utf-8",
     )
 
@@ -64,7 +65,7 @@ def add_ticker(symbol: str) -> None:
 
     if symbol not in items:
         items.append(symbol)
-        _save(sorted(items))
+        _save(items)
 
 
 def remove_ticker(symbol: str) -> None:
@@ -77,3 +78,48 @@ def remove_ticker(symbol: str) -> None:
     if symbol in items:
         items.remove(symbol)
         _save(items)
+
+
+def validate_and_add_ticker(symbol: str) -> Tuple[str, str]:
+    """
+    Validate a ticker before adding it to the watchlist.
+
+    Returns:
+        ("success", message)
+        ("warning", message)
+        ("error", message)
+    """
+
+    symbol = symbol.strip().upper()
+
+    if not symbol:
+        return (
+            "error",
+            "Please enter an ASX ticker.",
+        )
+
+    if not symbol.endswith(".AX"):
+        symbol = f"{symbol}.AX"
+
+    items = get_watchlist()
+
+    if symbol in items:
+        return (
+            "warning",
+            f"{symbol.replace('.AX', '')} is already in your watchlist.",
+        )
+
+    quote = search_quote(symbol)
+
+    if quote is None:
+        return (
+            "error",
+            f"{symbol.replace('.AX', '')} is not a valid ASX ticker.",
+        )
+
+    add_ticker(symbol)
+
+    return (
+        "success",
+        f"Added {symbol.replace('.AX', '')} to your watchlist.",
+    )

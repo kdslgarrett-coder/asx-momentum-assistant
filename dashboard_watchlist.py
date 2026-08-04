@@ -14,7 +14,10 @@ from market import (
     format_volume,
     search_quote,
 )
-from watchlist import get_watchlist
+from watchlist import (
+    get_watchlist,
+    validate_and_add_ticker,
+)
 
 
 def render() -> None:
@@ -23,6 +26,39 @@ def render() -> None:
     """
 
     st.subheader("⭐ Watchlist")
+
+    st.markdown("### Add ASX Ticker")
+
+    col1, col2 = st.columns([3, 1])
+
+    with col1:
+        ticker = st.text_input(
+            "ASX Code",
+            placeholder="e.g. KRR",
+            label_visibility="collapsed",
+        )
+
+    with col2:
+        add_clicked = st.button(
+            "Add to Watchlist",
+            use_container_width=True,
+        )
+
+    if add_clicked:
+
+        status, message = validate_and_add_ticker(ticker)
+
+        if status == "success":
+            st.success(message)
+            st.rerun()
+
+        elif status == "warning":
+            st.warning(message)
+
+        else:
+            st.error(message)
+
+    st.divider()
 
     rows = []
 
