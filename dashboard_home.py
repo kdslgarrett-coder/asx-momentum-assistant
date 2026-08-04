@@ -14,6 +14,7 @@ import streamlit as st
 import plotly.graph_objects as go
 
 from analysis_engine import analyse_stock
+from components.opportunity_card import render_opportunity_card
 from market import (
     format_market_cap,
     format_price,
@@ -44,32 +45,13 @@ def render(ticker):
     st.subheader(quote["company"])
 
     #
-    # Analyst Brief
+    # Analyst
     #
 
-    st.markdown("## 🧠 MomentumHQ Analyst")
-
-    st.info(
-        "Read this first. Technical evidence is available further down the page."
-    )
-
-    st.markdown("### 📰 What happened?")
-    st.write(brief["what_happened"])
-
-    st.markdown("### 📈 Why it matters")
-    st.write(brief["why_it_matters"])
-
-    st.markdown("### 📊 Market confirmation")
-    st.write(brief["market_confirmation"])
-
-    st.markdown("### ⚠️ Risks")
-    st.write(brief["risks"])
-
-    st.markdown("### 🎯 Recommendation")
-    st.success(brief["recommendation"])
+    render_opportunity_card(analysis)
 
     st.divider()
-
+    
     #
     # Market Summary
     #
