@@ -1,147 +1,187 @@
 # MomentumHQ Roadmap
 
-This document outlines the planned direction of MomentumHQ.
+## Purpose
 
-The roadmap is a guide rather than a fixed commitment. Priorities may change as the application evolves.
+This roadmap describes the capabilities required to achieve the MomentumHQ vision.
 
----
-
-# Completed
-
-## v2.1.1
-
-- Stable baseline
+Features are prioritised by the value they add to the MomentumHQ Analyst.
 
 ---
 
-## v2.1.2
+# Phase 1 - Platform Foundation ✅
 
-- Modular history module
-- Technical indicators module
+Completed.
 
----
+- Modular architecture
+- Analysis Engine
+- Opportunity Engine
+- Dashboard framework
+- Watchlist management
+- Branding
+- Product vision
 
-## v2.3.0
-
-- Tabbed interface
-- Dashboard module
-- Announcements module
-- Watchlist module
-
----
-
-## v2.4.0
-
-- AI analysis engine
-- Rule-based announcement sentiment
-- AI Summary
-- Confidence rating
-- Modular analysis architecture
+The platform is now stable and ready for intelligent capabilities.
 
 ---
 
-# In Progress
+# Phase 2 - Intelligence Engine (Current)
 
-## v2.4.1
+## Objective
 
-Professional Announcements
-
-### Planned
-
-- Compact market announcement table
-- Expandable AI analysis
-- Announcement hyperlinks
-- Better announcement classification
-- Cleaner layout
+Teach the MomentumHQ Analyst how to think.
 
 ---
 
-# Planned
+## Capability 1 - Catalyst Detection
 
-## v2.5.0
+Status: Planned
 
-Momentum Score
+Detect meaningful market catalysts including:
 
-- Overall score out of 100
-- Technical weighting
-- Announcement weighting
-- Volume weighting
-- Trend weighting
-- Risk weighting
+- ASX announcements
+- Trading halts
+- Resource upgrades
+- Major contracts
+- Earnings
+- Acquisitions
+- Commodity movements
+- Sector momentum
 
----
+Question answered:
 
-## v2.6.0
-
-Smart Watchlists
-
-- Rank by Momentum Score
-- Favourite stocks
-- Sorting
-- Filters
+> What happened?
 
 ---
 
-## v2.7.0
+## Capability 2 - Market Confirmation
 
-Alerts
+Status: Planned
 
-- Price alerts
-- Volume alerts
-- Announcement alerts
-- Momentum alerts
+Determine whether the market is validating the catalyst.
 
----
+Signals include:
 
-## v2.8.0
+- Price movement
+- Relative volume
+- Breakouts
+- Trend
+- Liquidity
 
-Portfolio
+Question answered:
 
-- Holdings
-- Profit/Loss
-- Portfolio analytics
-
----
-
-## v3.0.0
-
-AI Integration
-
-Replace the rule engine with:
-
-- OpenAI
-- Claude
-- Gemini
-- Ollama
-
-Support configurable AI providers.
+> Does the market agree?
 
 ---
 
-# Future Ideas
+## Capability 3 - Confidence Engine
 
-Ideas that may be implemented later.
+Status: Planned
 
-- Dark mode
-- Mobile optimisation
-- Insider trading analysis
-- Options data
-- Dividend calendar
-- Economic calendar
-- Sector rotation
-- Heat maps
-- Multi-chart layouts
-- AI watchlist commentary
-- Daily market briefing
+Combine:
+
+- Catalyst
+- Market confirmation
+- Technical health
+- Risk
+
+into a single confidence score.
+
+Question answered:
+
+> How confident should we be?
 
 ---
 
-# Guiding Principle
+## Capability 4 - Analyst Narrative
 
-Every release should make MomentumHQ:
+Status: Planned
 
-- smarter
-- faster
-- easier to use
+Generate plain English explanations.
 
-without making it more complicated.
+Every opportunity should explain:
+
+- What happened?
+- Why it matters
+- What the market is doing
+- Why it deserves attention
+
+Question answered:
+
+> Why should I care?
+
+---
+
+## Capability 5 - Opportunity Feed
+
+Status: Planned
+
+Present only the highest confidence opportunities.
+
+The feed should prioritise quality over quantity.
+
+Question answered:
+
+> What deserves my attention today?
+
+---
+
+# Phase 3 - MomentumHQ Analyst
+
+## Objective
+
+Become the investor's personal market analyst.
+
+MomentumHQ continuously analyses the ASX and presents only opportunities that deserve investigation.
+
+The analyst should reduce research time while improving decision quality.
+
+---
+
+# Future Capabilities
+
+## Market Themes
+
+Identify opportunities driven by:
+
+- Gold
+- Lithium
+- Uranium
+- AI
+- Banking
+- Healthcare
+
+---
+
+## Historical Learning
+
+Measure which catalyst types historically produced the strongest follow-through.
+
+---
+
+## Analyst Confidence
+
+Improve confidence scoring using historical outcomes.
+
+---
+
+## Portfolio Intelligence
+
+Monitor existing holdings.
+
+Alert investors when new catalysts emerge.
+
+---
+
+## Morning Brief
+
+Generate a daily analyst briefing before market open.
+
+---
+
+## Long-Term Goal
+
+MomentumHQ becomes the first application investors open every trading day.
+
+Instead of searching for opportunities...
+
+MomentumHQ finds them.
