@@ -1,18 +1,20 @@
 """
 MomentumHQ Dashboard
-Version 2.6.0-dev
+Version 2.7.0-dev
 
 Application dashboard orchestration.
-
-Task 15:
-- Presentation orchestration only.
-- Dashboard modules own rendering.
-- Preserve existing behaviour.
 """
 
 import streamlit as st
 
-from config import APP_NAME, DEFAULT_TICKER, VERSION
+from config import (
+    APP_NAME,
+    APP_TAGLINE,
+    DEFAULT_TICKER,
+    FOOTER,
+    VERSION,
+)
+
 from dashboard_home import render as render_home
 from dashboard_insights import render as render_insights
 from dashboard_news import render as render_news
@@ -28,15 +30,13 @@ TABS = (
 
 def render() -> None:
     """
-    Render the main MomentumHQ dashboard.
+    Render the MomentumHQ dashboard.
     """
 
-    st.set_page_config(
-        page_title=APP_NAME,
-        layout="wide",
-    )
-
     st.title(APP_NAME)
+
+    st.caption(APP_TAGLINE)
+
     st.caption(f"Version {VERSION}")
 
     st.divider()
@@ -75,4 +75,5 @@ def render() -> None:
         render_watchlist()
 
     st.divider()
-    st.caption(f"{APP_NAME} • Version {VERSION}")
+
+    st.caption(FOOTER)

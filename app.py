@@ -1,18 +1,18 @@
 """
 MomentumHQ
-Version 2.6.0-dev
+Version 2.7.0-dev
 
 Application entry point.
-
-Task 16:
-- Initialise Streamlit.
-- Load global styling.
-- Delegate application rendering to dashboard.py.
 """
 
 import streamlit as st
 
-from config import APP_NAME
+from config import (
+    APP_ICON,
+    APP_NAME,
+    PAGE_LAYOUT,
+    SIDEBAR_STATE,
+)
 from dashboard import render
 from styles import load_css
 
@@ -24,9 +24,9 @@ def main() -> None:
 
     st.set_page_config(
         page_title=APP_NAME,
-        page_icon="📈",
-        layout="wide",
-        initial_sidebar_state="collapsed",
+        page_icon=APP_ICON,
+        layout=PAGE_LAYOUT,
+        initial_sidebar_state=SIDEBAR_STATE,
     )
 
     load_css()

@@ -1,10 +1,35 @@
 """
 MomentumHQ Configuration
-Version 2.5.3 Stable
+Version 2.7.0-dev
+
+Application-wide configuration and branding.
 """
 
+# -----------------------------------------------------------------------------
+# Branding
+# -----------------------------------------------------------------------------
+
 APP_NAME = "MomentumHQ"
-VERSION = "2.5.3 Stable"
+
+APP_TAGLINE = "Opportunity Intelligence for ASX Investors"
+
+APP_DESCRIPTION = (
+    "MomentumHQ helps investors identify high-potential ASX "
+    "opportunities using technical analysis, announcement "
+    "intelligence and market context."
+)
+
+APP_ICON = "📈"
+
+VERSION = "2.7.0-dev"
+
+COPYRIGHT = "© 2026 MomentumHQ"
+
+FOOTER = f"{APP_NAME} • Version {VERSION}"
+
+# -----------------------------------------------------------------------------
+# Defaults
+# -----------------------------------------------------------------------------
 
 DEFAULT_TICKER = "BHP"
 
@@ -16,6 +41,20 @@ DEFAULT_WATCHLIST = [
     "WDS.AX",
 ]
 
-REFRESH_SECONDS = 300
+# -----------------------------------------------------------------------------
+# Market
+# -----------------------------------------------------------------------------
 
-CURRENCY = "$"
+MARKET_NAME = "Australian Securities Exchange"
+
+MARKET_CODE = "ASX"
+
+MARKET_TIMEZONE = "Australia/Sydney"
+
+# -----------------------------------------------------------------------------
+# Application
+# -----------------------------------------------------------------------------
+
+PAGE_LAYOUT = "wide"
+
+SIDEBAR_STATE = "collapsed"
