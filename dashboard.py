@@ -24,9 +24,8 @@ TABS = (
     "📊 Dashboard",
     "📢 Announcements",
     "💡 Insights",
-    "⭐ Watchlist",
+    "📈 Opportunities",
 )
-
 
 def render() -> None:
     """

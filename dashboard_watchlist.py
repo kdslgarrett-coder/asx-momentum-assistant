@@ -1,10 +1,10 @@
 """
-MomentumHQ Dashboard Watchlist
-Version 2.7.0-dev
+MomentumHQ Opportunities
+Version 3.0.0-dev
 
 Presentation layer only.
 
-Watchlist data is provided by watchlist.py.
+Opportunity data is provided by watchlist.py.
 Analysis data is provided by analysis_engine.py.
 """
 
@@ -21,12 +21,16 @@ from watchlist import (
 
 def render() -> None:
     """
-    Render the user's opportunity watchlist.
+    Render the user's Opportunities workspace.
     """
 
-    st.subheader("⭐ My Opportunities")
+    st.subheader("📈 Opportunities")
 
-    st.markdown("### Add ASX Ticker")
+    st.caption(
+        "MomentumHQ continuously monitors the opportunities you've chosen from the Morning Brief."
+    )
+
+    st.markdown("### Add Opportunity")
 
     col1, col2 = st.columns([3, 1])
 
@@ -39,7 +43,7 @@ def render() -> None:
 
     with col2:
         add_clicked = st.button(
-            "Add to Watchlist",
+            "➕ Add to Opportunities",
             use_container_width=True,
         )
 
@@ -59,7 +63,33 @@ def render() -> None:
 
     st.divider()
 
-    st.markdown("### Current Watchlist")
+    st.markdown("### Active Opportunities")
+
+    symbols = get_watchlist()
+
+    if not symbols:
+
+        st.info(
+            """
+### 📈 No Active Opportunities
+
+You haven't accepted any opportunities yet.
+
+### Your daily workflow
+
+🌅 Read the Morning Brief
+
+🧠 Review the Analyst's recommendations
+
+➕ Add the opportunities that interest you
+
+📈 MomentumHQ will then continuously monitor them and notify you when something meaningful changes.
+
+You can also manually add an ASX ticker above if you'd like to analyse a specific company.
+"""
+        )
+
+        return
 
     header = st.columns([1.2, 0.8, 1.2, 1.0, 1.0, 1.5, 0.8])
 
@@ -75,7 +105,7 @@ def render() -> None:
 
     watchlist = []
 
-    for symbol in get_watchlist():
+    for symbol in symbols:
 
         analysis = analyse_stock(symbol)
 
@@ -115,8 +145,12 @@ def render() -> None:
         if cols[6].button(
             "🗑",
             key=f"remove_{row['symbol']}",
-            help=f"Remove {row['ticker']} from watchlist",
+            help=f"Stop monitoring {row['ticker']}",
         ):
             remove_ticker(row["symbol"])
-            st.success(f"Removed {row['ticker']} from your watchlist.")
+
+            st.success(
+                f"MomentumHQ has stopped monitoring {row['ticker']}."
+            )
+
             st.rerun()

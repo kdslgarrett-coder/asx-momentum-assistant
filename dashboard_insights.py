@@ -10,6 +10,7 @@ Business logic is provided by analysis_engine.py.
 import streamlit as st
 
 from analysis_engine import analyse_stock
+from components.analyst_action import render_analyst_action
 
 
 def render(ticker: str) -> None:
@@ -60,5 +61,4 @@ def render(ticker: str) -> None:
         else:
             st.write("No significant risks identified.")
 
-    st.markdown("### Suggested Action")
-    st.info(result["action"])
+        render_analyst_action(result)
