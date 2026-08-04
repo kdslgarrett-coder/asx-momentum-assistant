@@ -5,15 +5,13 @@ Version 2.7.0-dev
 Presentation layer only.
 
 Watchlist data is provided by watchlist.py.
+Analysis data is provided by analysis_engine.py.
 """
 
 import streamlit as st
 
-from market import (
-    format_price,
-    format_volume,
-    search_quote,
-)
+from analysis_engine import analyse_stock
+from market import format_price
 from watchlist import (
     get_watchlist,
     validate_and_add_ticker,
@@ -22,10 +20,10 @@ from watchlist import (
 
 def render() -> None:
     """
-    Render the user's watchlist.
+    Render the user's opportunity watchlist.
     """
 
-    st.subheader("⭐ Watchlist")
+    st.subheader("⭐ My Opportunities")
 
     st.markdown("### Add ASX Ticker")
 
@@ -64,18 +62,28 @@ def render() -> None:
 
     for symbol in get_watchlist():
 
-        quote = search_quote(symbol)
+        analysis = analyse_stock(symbol)
 
-        if quote:
+        if analysis is None:
+            continue
 
-            rows.append(
-                {
-                    "Ticker": symbol.replace(".AX", ""),
-                    "Price": format_price(quote["price"]),
-                    "Change": quote["percent"],
-                    "Volume": format_volume(quote["volume"]),
-                }
-            )
+        quote = analysis["quote"]
+
+        rows.append(
+            {
+                "Ticker": symbol.replace(".AX", ""),
+                "Score": analysis["opportunity_score"],
+                "Rating": analysis["rating"],
+                "Price": format_price(quote["price"]),
+                "Change": quote["percent"],
+                "Announcement": analysis["announcement_category"],
+            }
+        )
+
+    rows.sort(
+        key=lambda row: row["Score"],
+        reverse=True,
+    )
 
     st.dataframe(
         rows,
