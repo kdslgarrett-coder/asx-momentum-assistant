@@ -1,6 +1,13 @@
 """
 MomentumHQ Dashboard Home
-Version 2.6.0-dev
+Version 2.7.0-dev
+
+Home dashboard for MomentumHQ.
+
+The Analyst Brief is now presented before technical analysis,
+reflecting the product philosophy:
+
+Story first. Evidence second.
 """
 
 import streamlit as st
@@ -17,9 +24,6 @@ from market import (
 def render(ticker):
     """
     Render the main dashboard.
-
-    Technical scoring is now provided by analysis_engine.py.
-    Behaviour is intentionally unchanged.
     """
 
     analysis = analyse_stock(ticker)
@@ -31,8 +35,44 @@ def render(ticker):
     quote = analysis["quote"]
     history = analysis["history"]
     indicators = analysis["indicators"]
+    brief = analysis["brief"]
+
+    #
+    # Company
+    #
 
     st.subheader(quote["company"])
+
+    #
+    # Analyst Brief
+    #
+
+    st.markdown("## 🧠 MomentumHQ Analyst")
+
+    st.info(
+        "Read this first. Technical evidence is available further down the page."
+    )
+
+    st.markdown("### 📰 What happened?")
+    st.write(brief["what_happened"])
+
+    st.markdown("### 📈 Why it matters")
+    st.write(brief["why_it_matters"])
+
+    st.markdown("### 📊 Market confirmation")
+    st.write(brief["market_confirmation"])
+
+    st.markdown("### ⚠️ Risks")
+    st.write(brief["risks"])
+
+    st.markdown("### 🎯 Recommendation")
+    st.success(brief["recommendation"])
+
+    st.divider()
+
+    #
+    # Market Summary
+    #
 
     c1, c2, c3, c4 = st.columns(4)
 
@@ -54,6 +94,10 @@ def render(ticker):
     )
 
     st.divider()
+
+    #
+    # Price Chart
+    #
 
     if history is not None:
 
@@ -100,38 +144,45 @@ def render(ticker):
 
     st.divider()
 
-    if indicators:
+    #
+    # Technical Evidence
+    #
 
-        st.subheader("Technical Analysis")
+    with st.expander(
+        "ℹ️ Technical Evidence",
+        expanded=False,
+    ):
 
-        c1, c2, c3 = st.columns(3)
+        if indicators:
 
-        c1.metric("Trend", indicators["trend"])
-        c2.metric("RSI", f"{indicators['rsi']:.1f}")
-        c3.metric("RVOL", f"{indicators['rvol']:.2f}x")
+            c1, c2, c3 = st.columns(3)
 
-        c1, c2 = st.columns(2)
+            c1.metric("Trend", indicators["trend"])
+            c2.metric("RSI", f"{indicators['rsi']:.1f}")
+            c3.metric("RVOL", f"{indicators['rvol']:.2f}x")
 
-        c1.metric(
-            "EMA 9",
-            format_price(indicators["ema9"]),
-        )
+            c1, c2 = st.columns(2)
 
-        c2.metric(
-            "EMA 20",
-            format_price(indicators["ema20"]),
-        )
+            c1.metric(
+                "EMA 9",
+                format_price(indicators["ema9"]),
+            )
 
-        c1, c2 = st.columns(2)
+            c2.metric(
+                "EMA 20",
+                format_price(indicators["ema20"]),
+            )
 
-        c1.metric(
-            "VWAP",
-            format_price(indicators["vwap"]),
-        )
+            c1, c2 = st.columns(2)
 
-        c2.metric(
-            "Opportunity Score",
-            f"{analysis['opportunity_score']}/100",
-        )
+            c1.metric(
+                "VWAP",
+                format_price(indicators["vwap"]),
+            )
 
-        st.success(f"⭐ {analysis['rating']}")
+            c2.metric(
+                "Opportunity Score",
+                f"{analysis['opportunity_score']}/100",
+            )
+
+            st.success(f"⭐ {analysis['rating']}")
