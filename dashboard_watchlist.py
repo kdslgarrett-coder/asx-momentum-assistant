@@ -1,48 +1,45 @@
 """
 MomentumHQ Dashboard Watchlist
-Version 2.6.0-dev
+Version 2.7.0-dev
 
 Presentation layer only.
 
-Uses analysis_engine.py as the single source of truth.
+Watchlist data is provided by watchlist.py.
 """
 
 import streamlit as st
 
-from analysis_engine import analyse_stock
-from config import DEFAULT_WATCHLIST
 from market import (
     format_price,
     format_volume,
+    search_quote,
 )
+from watchlist import get_watchlist
 
 
-def render():
-    """Render the MomentumHQ watchlist."""
+def render() -> None:
+    """
+    Render the user's watchlist.
+    """
 
     st.subheader("⭐ Watchlist")
 
     rows = []
 
-    for symbol in DEFAULT_WATCHLIST:
+    for symbol in get_watchlist():
 
-        analysis = analyse_stock(symbol)
+        quote = search_quote(symbol)
 
-        if analysis is None:
-            continue
+        if quote:
 
-        quote = analysis["quote"]
-
-        rows.append(
-            {
-                "Ticker": symbol.replace(".AX", ""),
-                "Price": format_price(quote["price"]),
-                "Change": quote["percent"],
-                "Volume": format_volume(quote["volume"]),
-                "Score": analysis["opportunity_score"],
-                "Rating": analysis["rating"],
-            }
-        )
+            rows.append(
+                {
+                    "Ticker": symbol.replace(".AX", ""),
+                    "Price": format_price(quote["price"]),
+                    "Change": quote["percent"],
+                    "Volume": format_volume(quote["volume"]),
+                }
+            )
 
     st.dataframe(
         rows,
