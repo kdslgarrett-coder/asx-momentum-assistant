@@ -1,6 +1,6 @@
 """
 MomentumHQ Analyst Action
-Version 3.0.0-dev
+Version 3.1.0-dev
 
 Displays the Analyst's recommended next action.
 """
@@ -25,31 +25,37 @@ def render_analyst_action(analysis: dict) -> None:
         or analysis.get("brief", {}).get("recommendation", "")
     )
 
-    st.markdown("## 🎯 Recommended Action")
+    st.markdown("## 🎯 Analyst Recommendation")
 
     #
-    # Add to Watchlist
+    # Add to Opportunities
     #
 
     if recommendation == "Add to Watchlist":
 
-        watchlist = get_watchlist()
+        opportunities = get_watchlist()
 
-        if ticker in watchlist:
+        if ticker in opportunities:
 
-            st.success("✔ Already in your watchlist")
+            st.success(
+                "✔ This opportunity is already being monitored."
+            )
 
             return
 
         if st.button(
-            f"➕ Add {ticker.replace('.AX', '')} to Watchlist",
+            f"➕ Add {ticker.replace('.AX', '')} to Opportunities",
             use_container_width=True,
         ):
 
             status, message = validate_and_add_ticker(ticker)
 
             if status == "success":
-                st.success(message)
+
+                st.success(
+                    f"{ticker.replace('.AX', '')} has been added to your Opportunities."
+                )
+
                 st.rerun()
 
             elif status == "warning":
@@ -67,7 +73,7 @@ def render_analyst_action(analysis: dict) -> None:
     if recommendation == "Monitor":
 
         st.info(
-            "👁 Monitor this opportunity for further confirmation."
+            "👁 Continue monitoring this opportunity for stronger confirmation."
         )
 
         return
@@ -79,7 +85,7 @@ def render_analyst_action(analysis: dict) -> None:
     if recommendation == "Ignore":
 
         st.warning(
-            "No action recommended at this stage."
+            "No action is recommended at this time."
         )
 
         return
