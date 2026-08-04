@@ -14,6 +14,7 @@ from analysis_engine import analyse_stock
 from market import format_price
 from watchlist import (
     get_watchlist,
+    remove_ticker,
     validate_and_add_ticker,
 )
 
@@ -58,7 +59,21 @@ def render() -> None:
 
     st.divider()
 
-    rows = []
+    st.markdown("### Current Watchlist")
+
+    header = st.columns([1.2, 0.8, 1.2, 1.0, 1.0, 1.5, 0.8])
+
+    header[0].markdown("**Ticker**")
+    header[1].markdown("**Score**")
+    header[2].markdown("**Rating**")
+    header[3].markdown("**Price**")
+    header[4].markdown("**Change**")
+    header[5].markdown("**Announcement**")
+    header[6].markdown("**Action**")
+
+    st.divider()
+
+    watchlist = []
 
     for symbol in get_watchlist():
 
@@ -69,24 +84,39 @@ def render() -> None:
 
         quote = analysis["quote"]
 
-        rows.append(
+        watchlist.append(
             {
-                "Ticker": symbol.replace(".AX", ""),
-                "Score": analysis["opportunity_score"],
-                "Rating": analysis["rating"],
-                "Price": format_price(quote["price"]),
-                "Change": quote["percent"],
-                "Announcement": analysis["announcement_category"],
+                "symbol": symbol,
+                "ticker": symbol.replace(".AX", ""),
+                "score": analysis["opportunity_score"],
+                "rating": analysis["rating"],
+                "price": format_price(quote["price"]),
+                "change": quote["percent"],
+                "announcement": analysis["announcement_category"],
             }
         )
 
-    rows.sort(
-        key=lambda row: row["Score"],
+    watchlist.sort(
+        key=lambda row: row["score"],
         reverse=True,
     )
 
-    st.dataframe(
-        rows,
-        hide_index=True,
-        use_container_width=True,
-    )
+    for row in watchlist:
+
+        cols = st.columns([1.2, 0.8, 1.2, 1.0, 1.0, 1.5, 0.8])
+
+        cols[0].write(row["ticker"])
+        cols[1].write(row["score"])
+        cols[2].write(row["rating"])
+        cols[3].write(row["price"])
+        cols[4].write(row["change"])
+        cols[5].write(row["announcement"])
+
+        if cols[6].button(
+            "🗑",
+            key=f"remove_{row['symbol']}",
+            help=f"Remove {row['ticker']} from watchlist",
+        ):
+            remove_ticker(row["symbol"])
+            st.success(f"Removed {row['ticker']} from your watchlist.")
+            st.rerun()
