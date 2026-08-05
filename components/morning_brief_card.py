@@ -1,19 +1,24 @@
 """
 MomentumHQ Morning Brief Card
-Version 3.1.0-dev
+Version 3.2.0-dev
 
 Compact opportunity card used by the Morning Brief.
 """
 
 import streamlit as st
 
+from narrative import (
+    generate_headline,
+    generate_summary,
+)
+
 
 def render_morning_brief_card(analysis: dict) -> bool:
     """
-    Render a compact Morning Brief opportunity card.
+    Render a Morning Brief opportunity card.
 
     Returns:
-        True if the user selects "Research",
+        True if the user selects Open Research,
         otherwise False.
     """
 
@@ -25,50 +30,83 @@ def render_morning_brief_card(analysis: dict) -> bool:
 
     rating = analysis["rating"]
 
-    summary = (
-        analysis.get("brief", {}).get("summary")
-        or analysis.get("summary")
-        or "No analyst summary available."
-    )
+    headline = generate_headline(analysis)
+
+    summary = generate_summary(analysis)
+
+    #
+    # Confidence presentation
+    #
+
+    if confidence >= 80:
+        confidence_label = "Very High"
+
+    elif confidence >= 65:
+        confidence_label = "High"
+
+    elif confidence >= 50:
+        confidence_label = "Moderate"
+
+    else:
+        confidence_label = "Low"
+
+    #
+    # Recommendation presentation
+    #
+
+    if rating == "Strong Buy":
+        recommendation = "🟢 STRONG BUY"
+
+    elif rating == "Watch":
+        recommendation = "🟡 WATCH"
+
+    elif rating == "Avoid":
+        recommendation = "🔴 AVOID"
+
+    else:
+        recommendation = rating.upper()
 
     with st.container(border=True):
 
-        col1, col2 = st.columns([3, 1])
+        left, right = st.columns([3, 1])
 
-        with col1:
+        with left:
 
             st.subheader(ticker)
 
-            st.caption(rating)
+            st.markdown(f"**{recommendation}**")
 
-        with col2:
+            st.caption(headline)
+
+        with right:
 
             st.metric(
                 "Confidence",
-                f"{confidence}",
+                f"{confidence}%",
+                confidence_label,
             )
 
         st.write(summary)
 
-        button_col1, button_col2 = st.columns(2)
+        button_left, button_right = st.columns(2)
 
-        with button_col1:
+        with button_left:
 
             research = st.button(
-                "🔎 Research",
+                "🔎 Open Research",
                 key=f"research_{ticker}",
                 use_container_width=True,
             )
 
-        with button_col2:
+        with button_right:
 
             if st.button(
-                "➕ Opportunities",
-                key=f"opportunity_{ticker}",
+                "👁 Monitor",
+                key=f"monitor_{ticker}",
                 use_container_width=True,
             ):
                 st.info(
-                    "Opportunity integration will be completed in the next capability."
+                    "Opportunity monitoring will be connected in the next capability."
                 )
 
         return research
