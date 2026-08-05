@@ -15,7 +15,7 @@ from config import (
     VERSION,
 )
 
-from dashboard_home import render as render_home
+from dashboard_research import render as render_research
 from dashboard_insights import render as render_insights
 from dashboard_news import render as render_news
 from dashboard_watchlist import render as render_watchlist
@@ -70,7 +70,7 @@ def render() -> None:
         render_morning_brief()
 
     with research_tab:
-        render_home(ticker)
+        render_research(ticker)
 
     with opportunities_tab:
         render_watchlist()

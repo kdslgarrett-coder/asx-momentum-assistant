@@ -1,13 +1,11 @@
 """
-MomentumHQ Dashboard Home
-Version 2.7.0-dev
+MomentumHQ Research Workspace
+Version 3.4.0-dev
 
-Home dashboard for MomentumHQ.
+Research workspace for MomentumHQ.
 
-The Analyst Brief is now presented before technical analysis,
-reflecting the product philosophy:
-
-Story first. Evidence second.
+Presents detailed analysis for a selected
+ASX listed company.
 """
 
 import streamlit as st
