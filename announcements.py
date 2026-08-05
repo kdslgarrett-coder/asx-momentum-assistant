@@ -1,15 +1,22 @@
 """
-MomentumHQ ASX Announcements
-Version 2.7.0-dev
+MomentumHQ Announcement Provider
+Version 4.0.0-dev
 
-RSS retrieval module.
+Provides ASX announcement data for MomentumHQ.
 
-Classification is delegated to classifier.py.
+This module is the single source of truth for
+announcement retrieval.
 
-This version enriches announcement metadata with parsed
-date/time fields and freshness while remaining backwards
-compatible.
+It retrieves and normalises announcement data.
+
+It does not analyse announcements.
+
+It does not determine importance.
+
+It does not generate investment recommendations.
 """
+
+from __future__ import annotations
 
 from datetime import datetime
 from email.utils import parsedate_to_datetime
@@ -22,6 +29,11 @@ from classifier import classify_category
 ASX_RSS = "https://www.asx.com.au/asx/rss/asx-announcements.xml"
 
 
+# ---------------------------------------------------------------------
+# Internal helpers
+# ---------------------------------------------------------------------
+
+
 def _enrich_announcement(
     title: str,
     link: str,
@@ -29,9 +41,6 @@ def _enrich_announcement(
 ) -> Dict[str, Any]:
     """
     Build a standard MomentumHQ announcement object.
-
-    Existing fields are preserved while additional metadata
-    is added for dashboards and the Analyst.
     """
 
     announcement: Dict[str, Any] = {
@@ -43,12 +52,13 @@ def _enrich_announcement(
         "published_time": "",
         "published_datetime": None,
         "freshness": "",
+        "source": "ASX RSS",
     }
 
     try:
+
         dt = parsedate_to_datetime(published)
 
-        # Convert timezone-aware values to local time if possible
         if dt.tzinfo is not None:
             dt = dt.astimezone()
 
@@ -59,18 +69,18 @@ def _enrich_announcement(
         today = datetime.now(dt.tzinfo).date()
 
         if dt.date() == today:
+
             announcement["freshness"] = "Today"
 
         elif (today - dt.date()).days == 1:
+
             announcement["freshness"] = "Yesterday"
 
         else:
+
             announcement["freshness"] = dt.strftime("%d %b %Y")
 
     except Exception:
-        #
-        # Fallback data (or unexpected formats)
-        #
 
         announcement["published_date"] = published
         announcement["published_time"] = ""
@@ -79,15 +89,19 @@ def _enrich_announcement(
     return announcement
 
 
-def get_announcements(
+# ---------------------------------------------------------------------
+# Provider implementation
+# ---------------------------------------------------------------------
+
+
+def latest(
     symbol: Optional[str] = None,
     limit: int = 10,
 ) -> List[Dict[str, Any]]:
     """
-    Return ASX announcements from the official ASX RSS feed.
+    Return the latest ASX announcements.
 
-    If the RSS feed is unavailable, a local fallback dataset
-    is returned.
+    This is the preferred Version 4 provider API.
     """
 
     feed = feedparser.parse(ASX_RSS)
@@ -106,11 +120,13 @@ def get_announcements(
             continue
 
         announcements.append(
+
             _enrich_announcement(
                 title=title,
                 link=getattr(entry, "link", ""),
                 published=getattr(entry, "published", ""),
             )
+
         )
 
         if len(announcements) >= limit:
@@ -122,57 +138,132 @@ def get_announcements(
     return fallback(symbol, limit)
 
 
+def history(
+    symbol: Optional[str] = None,
+    limit: int = 50,
+) -> List[Dict[str, Any]]:
+    """
+    Return historical announcements.
+
+    Currently aliases latest().
+    """
+
+    return latest(symbol, limit)
+
+
+def refresh() -> List[Dict[str, Any]]:
+    """
+    Refresh announcement data.
+
+    A future capability will introduce local caching.
+
+    For now this simply performs a fresh retrieval.
+    """
+
+    return latest()
+
+
+def count(
+    symbol: Optional[str] = None,
+) -> int:
+    """
+    Return the number of retrieved announcements.
+    """
+
+    return len(latest(symbol))
+
+
+# ---------------------------------------------------------------------
+# Backwards compatibility
+# ---------------------------------------------------------------------
+
+
+def get_announcements(
+    symbol: Optional[str] = None,
+    limit: int = 10,
+) -> List[Dict[str, Any]]:
+    """
+    Legacy API.
+
+    Retained for backwards compatibility.
+
+    New code should call latest().
+    """
+
+    return latest(symbol, limit)
+
+
+# ---------------------------------------------------------------------
+# Offline fallback
+# ---------------------------------------------------------------------
+
+
 def fallback(
     symbol: Optional[str] = None,
     limit: int = 10,
 ) -> List[Dict[str, Any]]:
     """
-    Return a small offline announcement dataset used when the
-    ASX RSS feed cannot be reached.
+    Return a small offline dataset when
+    live retrieval is unavailable.
     """
 
     items = [
+
         {
             "title": "KRR Major Gold Discovery",
             "published": "Today",
             "link": "",
         },
+
         {
             "title": "CXO Trading Halt Lifted",
             "published": "Today",
             "link": "",
         },
+
         {
             "title": "IVZ Capital Raising",
             "published": "Yesterday",
             "link": "",
         },
+
         {
             "title": "BHP Investor Presentation",
             "published": "Yesterday",
             "link": "",
         },
+
     ]
 
     if symbol:
+
         items.insert(
+
             0,
+
             {
-                "title": f"{symbol.upper()} Quarterly Activities Report",
+                "title": (
+                    f"{symbol.upper()} "
+                    "Quarterly Activities Report"
+                ),
                 "published": "Today",
                 "link": "",
             },
+
         )
 
     results: List[Dict[str, Any]] = []
 
     for item in items[:limit]:
+
         results.append(
+
             _enrich_announcement(
                 title=item["title"],
                 link=item["link"],
                 published=item["published"],
             )
+
         )
 
     return results
