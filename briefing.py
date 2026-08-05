@@ -1,6 +1,6 @@
 """
 MomentumHQ Briefing Engine
-Version 3.3.0-dev
+Version 3.4.0-dev
 
 Generates the Morning Brief from the current
 ASX investment universe.
@@ -11,6 +11,10 @@ from datetime import datetime
 from typing import Any
 
 from analysis_engine import analyse_stock
+from narrative import (
+    generate_headline,
+    generate_summary,
+)
 from universe import get_asx_universe
 
 
@@ -22,6 +26,8 @@ class BriefOpportunity:
 
     ticker: str
     analysis: dict[str, Any]
+    headline: str
+    summary: str
 
 
 @dataclass
@@ -46,11 +52,6 @@ def get_morning_brief() -> MorningBrief:
 
     opportunities: list[BriefOpportunity] = []
 
-    #
-    # Analyse every company in the current
-    # development universe.
-    #
-
     for ticker in get_asx_universe():
 
         analysis = analyse_stock(ticker)
@@ -62,24 +63,15 @@ def get_morning_brief() -> MorningBrief:
             BriefOpportunity(
                 ticker=ticker,
                 analysis=analysis,
+                headline=generate_headline(analysis),
+                summary=generate_summary(analysis),
             )
         )
-
-    #
-    # Rank by Opportunity Score.
-    #
 
     opportunities.sort(
         key=lambda item: item.analysis["opportunity_score"],
         reverse=True,
     )
-
-    #
-    # Keep only the strongest opportunities.
-    #
-    # This limit will eventually become a user
-    # preference.
-    #
 
     opportunities = opportunities[:5]
 
@@ -91,9 +83,9 @@ def get_morning_brief() -> MorningBrief:
         breakouts=11,
         analyst_summary=(
             f"The Analyst reviewed the development universe and "
-            f"identified {len(opportunities)} opportunity"
-            f"{'' if len(opportunities) == 1 else 'ies'} "
-            f"worthy of further investigation."
+            f"identified {len(opportunities)} opportunit"
+            f"{'y' if len(opportunities) == 1 else 'ies'} "
+            "worthy of further investigation."
         ),
         opportunities=opportunities,
     )
