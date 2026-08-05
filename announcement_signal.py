@@ -1,6 +1,6 @@
 """
 MomentumHQ Announcement Signal
-Version 4.0.0-dev
+Version 4.1.0-dev
 
 Represents a factual announcement detected by the
 Announcement Scout.
@@ -30,25 +30,35 @@ class AnnouncementSignal:
 
     symbol: str
 
-    company: str
+    #
+    # Company name is optional.
+    #
+    # The Announcement Provider supplies factual
+    # announcement data only. A future Company
+    # Registry may enrich signals with company
+    # metadata without requiring additional
+    # network requests during discovery.
+    #
+
+    company: str = ""
 
     #
     # Announcement
     #
 
-    title: str
+    title: str = ""
 
-    category: str
+    category: str = ""
 
-    released: datetime
+    released: datetime | None = None
 
-    url: str
+    url: str = ""
 
     #
     # Evidence
     #
 
-    source: str = "ASX"
+    source: str = "ASX RSS"
 
     scout: str = "Announcement Scout"
 
