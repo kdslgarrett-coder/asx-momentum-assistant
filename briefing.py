@@ -1,17 +1,15 @@
 """
 MomentumHQ Briefing Engine
-Version 3.1.0-dev
+Version 3.2.0-dev
 
 Generates the data model for the Morning Brief.
-
-This module separates opportunity selection from
-presentation, allowing the Morning Brief UI to remain
-focused purely on rendering.
 """
 
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any
+
+from analysis_engine import analyse_stock
 
 
 @dataclass
@@ -42,15 +40,29 @@ class MorningBrief:
 def get_morning_brief() -> MorningBrief:
     """
     Generate today's Morning Brief.
-
-    This is currently a placeholder implementation.
-
-    Future capabilities will:
-      - Scan the ASX
-      - Rank opportunities
-      - Apply user preferences
-      - Populate opportunities automatically
     """
+
+    opportunities: list[BriefOpportunity] = []
+
+    #
+    # Temporary demonstration opportunity.
+    #
+    # Future capabilities will replace this with
+    # market scanning and opportunity ranking.
+    #
+
+    ticker = "KRR.AX"
+
+    analysis = analyse_stock(ticker)
+
+    if analysis is not None:
+
+        opportunities.append(
+            BriefOpportunity(
+                ticker=ticker,
+                analysis=analysis,
+            )
+        )
 
     return MorningBrief(
         generated_at=datetime.now(),
@@ -59,8 +71,11 @@ def get_morning_brief() -> MorningBrief:
         volume_events=18,
         breakouts=11,
         analyst_summary=(
-            "The Analyst reviewed the market and identified "
-            "five opportunities that warrant further investigation."
+            f"The Analyst reviewed the market and identified "
+            f"{len(opportunities)} opportunity worth further investigation."
+            if len(opportunities) == 1
+            else f"The Analyst reviewed the market and identified "
+                 f"{len(opportunities)} opportunities worth further investigation."
         ),
-        opportunities=[],
+        opportunities=opportunities,
     )
