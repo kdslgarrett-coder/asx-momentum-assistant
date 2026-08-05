@@ -1,11 +1,13 @@
 """
 MomentumHQ Morning Brief Card
-Version 3.2.0-dev
+Version 3.3.0-dev
 
 Compact opportunity card used by the Morning Brief.
 """
 
 import streamlit as st
+
+import monitor
 
 from narrative import (
     generate_headline,
@@ -105,8 +107,17 @@ def render_morning_brief_card(analysis: dict) -> bool:
                 key=f"monitor_{ticker}",
                 use_container_width=True,
             ):
-                st.info(
-                    "Opportunity monitoring will be connected in the next capability."
-                )
+
+                if monitor.add(analysis):
+
+                    st.success(
+                        f"{ticker} added to Opportunities."
+                    )
+
+                else:
+
+                    st.info(
+                        f"{ticker} is already being monitored."
+                    )
 
         return research

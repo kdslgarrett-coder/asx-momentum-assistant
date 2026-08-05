@@ -1,6 +1,6 @@
 """
 MomentumHQ Opportunity Engine
-Version 2.5.3
+Version 3.0.0-dev
 
 Central opportunity evaluation engine.
 """
@@ -25,8 +25,6 @@ def evaluate_opportunity(
 ) -> Dict:
     """
     Evaluate a trading opportunity and return a standardised result.
-
-    Behaviour intentionally matches v2.5.3 Stable.
     """
 
     score = calculate_opportunity_score(
@@ -53,12 +51,18 @@ def evaluate_opportunity(
     else:
         risks.append("Elevated risk")
 
+    #
+    # Recommended investor action
+    #
+
     if score >= 70:
         action = "Investigate Today"
+
     elif score >= 40:
-        action = "Add to Watchlist"
+        action = "Monitor"
+
     else:
-        action = "No Action"
+        action = "Ignore"
 
     return {
         "score": score,

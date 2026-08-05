@@ -1,6 +1,6 @@
 """
 MomentumHQ Configuration
-Version 2.7.0-dev
+Version 3.0.0-dev
 
 Application-wide configuration and branding.
 """
@@ -21,7 +21,7 @@ APP_DESCRIPTION = (
 
 APP_ICON = "📈"
 
-VERSION = "2.7.0-dev"
+VERSION = "3.0.0-dev"
 
 COPYRIGHT = "© 2026 MomentumHQ"
 
@@ -33,7 +33,7 @@ FOOTER = f"{APP_NAME} • Version {VERSION}"
 
 DEFAULT_TICKER = "BHP"
 
-DEFAULT_WATCHLIST = [
+DEFAULT_MONITORED_OPPORTUNITIES = [
     "BHP.AX",
     "CBA.AX",
     "FMG.AX",

@@ -1,27 +1,24 @@
 """
 MomentumHQ Opportunities
-Version 3.0.0-dev
+Version 3.1.0-dev
 
-Presentation layer only.
+Presentation layer for monitored opportunities.
 
-Opportunity data is provided by watchlist.py.
+Opportunity data is provided by monitor.py.
 Analysis data is provided by analysis_engine.py.
 """
 
 import streamlit as st
 
+import monitor
+
 from analysis_engine import analyse_stock
 from market import format_price
-from watchlist import (
-    get_watchlist,
-    remove_ticker,
-    validate_and_add_ticker,
-)
 
 
 def render() -> None:
     """
-    Render the user's Opportunities workspace.
+    Render the Opportunities workspace.
     """
 
     st.subheader("📈 Opportunities")
@@ -35,6 +32,7 @@ def render() -> None:
     col1, col2 = st.columns([3, 1])
 
     with col1:
+
         ticker = st.text_input(
             "ASX Code",
             placeholder="e.g. KRR",
@@ -42,6 +40,7 @@ def render() -> None:
         )
 
     with col2:
+
         add_clicked = st.button(
             "➕ Add to Opportunities",
             use_container_width=True,
@@ -49,23 +48,26 @@ def render() -> None:
 
     if add_clicked:
 
-        status, message = validate_and_add_ticker(ticker)
+        status, message = monitor.validate_and_add(ticker)
 
         if status == "success":
+
             st.success(message)
             st.rerun()
 
         elif status == "warning":
+
             st.warning(message)
 
         else:
+
             st.error(message)
 
     st.divider()
 
     st.markdown("### Active Opportunities")
 
-    symbols = get_watchlist()
+    symbols = monitor.monitored_symbols()
 
     if not symbols:
 
@@ -81,15 +83,46 @@ You haven't accepted any opportunities yet.
 
 🧠 Review the Analyst's recommendations
 
-➕ Add the opportunities that interest you
+👁 Monitor the opportunities that interest you
 
-📈 MomentumHQ will then continuously monitor them and notify you when something meaningful changes.
+📈 MomentumHQ will continuously monitor them and notify you when something meaningful changes.
 
-You can also manually add an ASX ticker above if you'd like to analyse a specific company.
+You can also manually add an ASX ticker above.
 """
         )
 
         return
+
+    rows = []
+
+    for symbol in symbols:
+
+        analysis = monitor.get_analysis(symbol)
+
+        if analysis is None:
+            analysis = analyse_stock(symbol)
+
+        if analysis is None:
+            continue
+
+        quote = analysis["quote"]
+
+        rows.append(
+            {
+                "symbol": symbol,
+                "ticker": symbol.replace(".AX", ""),
+                "score": analysis["opportunity_score"],
+                "rating": analysis["rating"],
+                "price": format_price(quote["price"]),
+                "change": quote["percent"],
+                "announcement": analysis["announcement_category"],
+            }
+        )
+
+    rows.sort(
+        key=lambda row: row["score"],
+        reverse=True,
+    )
 
     header = st.columns([1.2, 0.8, 1.2, 1.0, 1.0, 1.5, 0.8])
 
@@ -103,35 +136,7 @@ You can also manually add an ASX ticker above if you'd like to analyse a specifi
 
     st.divider()
 
-    watchlist = []
-
-    for symbol in symbols:
-
-        analysis = analyse_stock(symbol)
-
-        if analysis is None:
-            continue
-
-        quote = analysis["quote"]
-
-        watchlist.append(
-            {
-                "symbol": symbol,
-                "ticker": symbol.replace(".AX", ""),
-                "score": analysis["opportunity_score"],
-                "rating": analysis["rating"],
-                "price": format_price(quote["price"]),
-                "change": quote["percent"],
-                "announcement": analysis["announcement_category"],
-            }
-        )
-
-    watchlist.sort(
-        key=lambda row: row["score"],
-        reverse=True,
-    )
-
-    for row in watchlist:
+    for row in rows:
 
         cols = st.columns([1.2, 0.8, 1.2, 1.0, 1.0, 1.5, 0.8])
 
@@ -147,7 +152,8 @@ You can also manually add an ASX ticker above if you'd like to analyse a specifi
             key=f"remove_{row['symbol']}",
             help=f"Stop monitoring {row['ticker']}",
         ):
-            remove_ticker(row["symbol"])
+
+            monitor.remove(row["symbol"])
 
             st.success(
                 f"MomentumHQ has stopped monitoring {row['ticker']}."

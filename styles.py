@@ -1,6 +1,6 @@
 """
 MomentumHQ Styling
-Version 2.0.0
+Version 3.0.0-dev
 """
 
 import streamlit as st
@@ -52,7 +52,7 @@ def load_css():
             height: 42px;
         }
 
-        .watchlist-header {
+        .opportunities-header {
             font-size: 20px;
             font-weight: bold;
             color: #1976D2;

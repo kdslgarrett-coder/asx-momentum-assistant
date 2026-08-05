@@ -1,16 +1,13 @@
 """
 MomentumHQ Analyst Action
-Version 3.1.0-dev
+Version 3.3.0-dev
 
 Displays the Analyst's recommended next action.
 """
 
 import streamlit as st
 
-from watchlist import (
-    get_watchlist,
-    validate_and_add_ticker,
-)
+import monitor
 
 
 def render_analyst_action(analysis: dict) -> None:
@@ -28,14 +25,12 @@ def render_analyst_action(analysis: dict) -> None:
     st.markdown("## 🎯 Analyst Recommendation")
 
     #
-    # Add to Opportunities
+    # Monitor Opportunity
     #
 
-    if recommendation == "Add to Watchlist":
+    if recommendation == "Monitor":
 
-        opportunities = get_watchlist()
-
-        if ticker in opportunities:
+        if monitor.is_monitored(ticker):
 
             st.success(
                 "✔ This opportunity is already being monitored."
@@ -44,36 +39,36 @@ def render_analyst_action(analysis: dict) -> None:
             return
 
         if st.button(
-            f"➕ Add {ticker.replace('.AX', '')} to Opportunities",
+            f"👁 Monitor {ticker.replace('.AX', '')}",
             use_container_width=True,
         ):
 
-            status, message = validate_and_add_ticker(ticker)
+            status, message = monitor.validate_and_add(ticker)
 
             if status == "success":
 
-                st.success(
-                    f"{ticker.replace('.AX', '')} has been added to your Opportunities."
-                )
+                st.success(message)
 
                 st.rerun()
 
             elif status == "warning":
+
                 st.warning(message)
 
             else:
+
                 st.error(message)
 
         return
 
     #
-    # Monitor
+    # Investigate Today
     #
 
-    if recommendation == "Monitor":
+    if recommendation == "Investigate Today":
 
-        st.info(
-            "👁 Continue monitoring this opportunity for stronger confirmation."
+        st.success(
+            "🔎 The Analyst recommends immediate investigation."
         )
 
         return

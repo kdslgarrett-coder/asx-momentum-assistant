@@ -1,6 +1,6 @@
 """
 MomentumHQ Dashboard
-Version 3.0.0-dev
+Version 3.1.0-dev
 
 Application workspace orchestration.
 """
@@ -18,7 +18,7 @@ from config import (
 from dashboard_research import render as render_research
 from dashboard_insights import render as render_insights
 from dashboard_news import render as render_news
-from dashboard_watchlist import render as render_watchlist
+from dashboard_opportunities import render as render_opportunities
 from dashboard_morning_brief import render as render_morning_brief
 
 
@@ -73,7 +73,7 @@ def render() -> None:
         render_research(ticker)
 
     with opportunities_tab:
-        render_watchlist()
+        render_opportunities()
 
     with insights_tab:
         render_insights(ticker)
