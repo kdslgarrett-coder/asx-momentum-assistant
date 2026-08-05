@@ -123,18 +123,24 @@ def company(symbol: str) -> Company | None:
     """
     Return company metadata.
 
-    Returns None if the company
-    does not exist.
+    Accepts either:
+
+        BHP
+        BHP.AX
     """
 
-    symbol = symbol.upper()
+    lookup = symbol.strip().upper()
+
+    if not lookup.endswith(".AX"):
+        lookup += ".AX"
 
     for item in DEVELOPMENT_UNIVERSE:
 
-        if item.symbol == symbol:
+        if item.symbol.upper() == lookup:
             return item
 
     return None
+
 
 
 def size() -> int:
