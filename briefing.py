@@ -1,8 +1,9 @@
 """
 MomentumHQ Briefing Engine
-Version 3.2.0-dev
+Version 3.3.0-dev
 
-Generates the data model for the Morning Brief.
+Generates the Morning Brief from the current
+ASX investment universe.
 """
 
 from dataclasses import dataclass, field
@@ -10,6 +11,7 @@ from datetime import datetime
 from typing import Any
 
 from analysis_engine import analyse_stock
+from universe import get_asx_universe
 
 
 @dataclass
@@ -45,17 +47,16 @@ def get_morning_brief() -> MorningBrief:
     opportunities: list[BriefOpportunity] = []
 
     #
-    # Temporary demonstration opportunity.
-    #
-    # Future capabilities will replace this with
-    # market scanning and opportunity ranking.
+    # Analyse every company in the current
+    # development universe.
     #
 
-    ticker = "KRR.AX"
+    for ticker in get_asx_universe():
 
-    analysis = analyse_stock(ticker)
+        analysis = analyse_stock(ticker)
 
-    if analysis is not None:
+        if analysis is None:
+            continue
 
         opportunities.append(
             BriefOpportunity(
@@ -64,6 +65,24 @@ def get_morning_brief() -> MorningBrief:
             )
         )
 
+    #
+    # Rank by Opportunity Score.
+    #
+
+    opportunities.sort(
+        key=lambda item: item.analysis["opportunity_score"],
+        reverse=True,
+    )
+
+    #
+    # Keep only the strongest opportunities.
+    #
+    # This limit will eventually become a user
+    # preference.
+    #
+
+    opportunities = opportunities[:5]
+
     return MorningBrief(
         generated_at=datetime.now(),
         status="Complete",
@@ -71,11 +90,10 @@ def get_morning_brief() -> MorningBrief:
         volume_events=18,
         breakouts=11,
         analyst_summary=(
-            f"The Analyst reviewed the market and identified "
-            f"{len(opportunities)} opportunity worth further investigation."
-            if len(opportunities) == 1
-            else f"The Analyst reviewed the market and identified "
-                 f"{len(opportunities)} opportunities worth further investigation."
+            f"The Analyst reviewed the development universe and "
+            f"identified {len(opportunities)} opportunity"
+            f"{'' if len(opportunities) == 1 else 'ies'} "
+            f"worthy of further investigation."
         ),
         opportunities=opportunities,
     )
