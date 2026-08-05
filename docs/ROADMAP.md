@@ -1,187 +1,179 @@
 # MomentumHQ Roadmap
 
-## Purpose
-
-This roadmap describes the capabilities required to achieve the MomentumHQ vision.
-
-Features are prioritised by the value they add to the MomentumHQ Analyst.
+Version: 2.0
 
 ---
 
-# Phase 1 - Platform Foundation ✅
+# Purpose
+
+This roadmap describes the planned capabilities for MomentumHQ.
+
+Capabilities are prioritised according to the value they add to investors and how they strengthen The Analyst.
+
+Every capability should improve one investor workflow.
+
+---
+
+# Phase 1 — Platform Foundation ✅
 
 Completed.
 
-- Modular architecture
+Delivered:
+
+- Layered architecture
+- Modular components
 - Analysis Engine
-- Opportunity Engine
-- Dashboard framework
-- Watchlist management
-- Branding
-- Product vision
+- Narrative Engine
+- Discovery Engine foundation
+- ASX Universe
+- Morning Brief workspace
+- Research workspace
+- Opportunities workspace
+- Insights workspace
+- Announcements workspace
+- Product documentation
 
-The platform is now stable and ready for intelligent capabilities.
-
----
-
-# Phase 2 - Intelligence Engine (Current)
-
-## Objective
-
-Teach the MomentumHQ Analyst how to think.
+MomentumHQ now has a stable architecture for future development.
 
 ---
 
-## Capability 1 - Catalyst Detection
+# Phase 2 — Investor Workflow ✅
 
-Status: Planned
+Completed.
 
-Detect meaningful market catalysts including:
+Objective:
 
-- ASX announcements
-- Trading halts
-- Resource upgrades
-- Major contracts
-- Earnings
-- Acquisitions
-- Commodity movements
-- Sector momentum
+Create a complete investor workflow.
 
-Question answered:
+Delivered:
 
-> What happened?
+🌅 Morning Brief
+
+↓
+
+🔎 Research
+
+↓
+
+📈 Opportunities
+
+↓
+
+💡 Insights
+
+↓
+
+📢 Announcements
+
+The product now guides investors from discovery through research and ongoing monitoring.
 
 ---
 
-## Capability 2 - Market Confirmation
+# Phase 3 — Discovery Intelligence 🚧
 
-Status: Planned
+Current Phase
 
-Determine whether the market is validating the catalyst.
+Objective:
 
-Signals include:
+Make The Analyst significantly smarter.
 
-- Price movement
-- Relative volume
-- Breakouts
-- Trend
+## Capability 3.1 — Discovery Filters
+
+Introduce filters before full analysis.
+
+Examples:
+
+- Fresh announcements
 - Liquidity
+- Relative volume
+- Technical breakouts
+- Investor preferences
 
 Question answered:
 
-> Does the market agree?
+> Which companies deserve analysis today?
 
 ---
 
-## Capability 3 - Confidence Engine
+## Capability 3.2 — Real Discovery Statistics
 
-Status: Planned
+Generate Morning Brief statistics from the actual scan.
 
-Combine:
+Examples:
 
-- Catalyst
-- Market confirmation
-- Technical health
-- Risk
-
-into a single confidence score.
+- Companies analysed
+- Opportunities discovered
+- High confidence opportunities
+- Scan completion time
 
 Question answered:
 
-> How confident should we be?
+> What did today's scan discover?
 
 ---
 
-## Capability 4 - Analyst Narrative
+## Capability 3.3 — Opportunity Monitoring
 
-Status: Planned
+Complete Monitor integration.
 
-Generate plain English explanations.
+One click should:
 
-Every opportunity should explain:
-
-- What happened?
-- Why it matters
-- What the market is doing
-- Why it deserves attention
+- Add to Opportunities
+- Prevent duplicates
+- Confirm monitoring
 
 Question answered:
 
-> Why should I care?
+> What should I continue monitoring?
 
 ---
 
-## Capability 5 - Opportunity Feed
+## Capability 3.4 — Research Workflow
 
-Status: Planned
+Improve the Research workspace.
 
-Present only the highest confidence opportunities.
+Future enhancements include:
 
-The feed should prioritise quality over quantity.
+- Workspace-specific ticker selection
+- Faster navigation
+- Historical comparisons
+- Analyst timeline
 
 Question answered:
 
-> What deserves my attention today?
+> What do I need to know about this company?
 
 ---
 
-# Phase 3 - MomentumHQ Analyst
+# Phase 4 — The Analyst
 
-## Objective
+Objective
 
-Become the investor's personal market analyst.
+Transform MomentumHQ into a true market analyst.
 
-MomentumHQ continuously analyses the ASX and presents only opportunities that deserve investigation.
+Future capabilities may include:
 
-The analyst should reduce research time while improving decision quality.
+- Historical confidence tracking
+- Opportunity comparisons
+- Market themes
+- Sector rotation
+- Portfolio intelligence
+- Watchlist alerts
+- AI-assisted narratives
+- Historical learning
 
----
-
-# Future Capabilities
-
-## Market Themes
-
-Identify opportunities driven by:
-
-- Gold
-- Lithium
-- Uranium
-- AI
-- Banking
-- Healthcare
+The Analyst should continuously improve through better reasoning rather than simply displaying more information.
 
 ---
 
-## Historical Learning
+# Long-Term Vision
 
-Measure which catalyst types historically produced the strongest follow-through.
+MomentumHQ should become the first application an ASX investor opens each trading day.
 
----
+Rather than searching for opportunities...
 
-## Analyst Confidence
+MomentumHQ discovers them, explains them, and monitors them.
 
-Improve confidence scoring using historical outcomes.
+The guiding principle remains:
 
----
-
-## Portfolio Intelligence
-
-Monitor existing holdings.
-
-Alert investors when new catalysts emerge.
-
----
-
-## Morning Brief
-
-Generate a daily analyst briefing before market open.
-
----
-
-## Long-Term Goal
-
-MomentumHQ becomes the first application investors open every trading day.
-
-Instead of searching for opportunities...
-
-MomentumHQ finds them.
+> Story first. Evidence second.

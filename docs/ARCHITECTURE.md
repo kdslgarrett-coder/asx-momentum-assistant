@@ -1,228 +1,198 @@
 # MomentumHQ Architecture
 
-Version: 2.4.0
+Version: 2.0
 
 ---
 
-# Vision
+# Purpose
 
-MomentumHQ is a personal ASX market intelligence platform.
+MomentumHQ follows a layered architecture that separates presentation,
+business services, analysis and market data.
 
-The objective is not simply to display market data, but to assist investors by combining:
+Each layer has a single responsibility and communicates only with the
+layer immediately below it.
 
-- Live market information
+```
+Presentation Layer
+────────────────────────────────────
+
+dashboard.py
+
+🌅 Morning Brief
+🔎 Research
+📈 Opportunities
+💡 Insights
+📢 Announcements
+
+        │
+        ▼
+
+Components
+────────────────────────────────────
+
+Morning Brief Card
+Opportunity Card
+Evidence Pack
+Timeline
+Confidence Badge
+Analyst Action
+
+        │
+        ▼
+
+Business Services
+────────────────────────────────────
+
+Briefing Engine
+Narrative Engine
+Universe
+
+        │
+        ▼
+
+Analysis Layer
+────────────────────────────────────
+
+Analysis Engine
+Scoring Engine
+Classification Engine
+Confidence Engine
+
+        │
+        ▼
+
+Market Data
+────────────────────────────────────
+
+ASX announcements
+Market prices
+Historical data
+Technical indicators
+```
+
+---
+
+# Layer Responsibilities
+
+## Presentation Layer
+
+Responsible for user interaction only.
+
+Responsibilities:
+
+- Render Streamlit workspaces.
+- Collect user input.
+- Display business results.
+- Never contain business logic.
+
+---
+
+## Components
+
+Reusable UI elements shared across multiple workspaces.
+
+Examples include:
+
+- Morning Brief Card
+- Opportunity Card
+- Timeline
+- Evidence Pack
+- Confidence Badge
+- Analyst Action
+
+Components present information only.
+
+They should never perform analysis or business decisions.
+
+---
+
+## Business Services
+
+Coordinate MomentumHQ workflows.
+
+Examples include:
+
+- Briefing Engine
+- Narrative Engine
+- Universe
+
+Responsibilities include:
+
+- Orchestrating workflows.
+- Combining analysis results.
+- Preparing presentation models.
+- Never rendering user interface elements.
+
+---
+
+## Analysis Layer
+
+Transforms raw market data into structured intelligence.
+
+Responsibilities include:
+
 - Technical analysis
-- Company announcements
-- AI-assisted interpretation
-- Momentum scoring
+- Opportunity scoring
+- Classification
+- Confidence assessment
 
-into a single application.
+The Analysis Layer should never contain presentation logic.
+
+---
+
+## Market Data
+
+Provides the raw information used by the Analysis Layer.
+
+Examples include:
+
+- ASX announcements
+- Market prices
+- Historical data
+- Technical indicators
+
+This layer should remain independent of business logic.
 
 ---
 
 # Design Principles
 
-The application follows these principles.
+MomentumHQ follows these architectural principles.
 
-## 1. Single Responsibility
-
-Every module performs one job.
-
-Example:
-
-history.py
-
-Downloads historical prices.
-
-indicators.py
-
-Calculates indicators.
-
-dashboard_news.py
-
-Displays announcements.
-
-analysis.py
-
-Provides AI or rule-based analysis.
+- One responsibility per module.
+- One logical capability per commit.
+- Business logic never belongs in Streamlit views.
+- Components present information; they do not generate it.
+- Business services coordinate workflows.
+- Prefer deterministic logic before introducing AI.
+- Each capability should answer an investor question.
+- Refactor names when the product evolves rather than preserving legacy terminology.
+- Extend existing layers before introducing new ones.
 
 ---
 
-## 2. Loose Coupling
+# Architecture Philosophy
 
-Display code should never perform calculations.
+MomentumHQ transforms raw market information into investor-ready intelligence.
 
-Dashboard modules display information.
-
-Service modules calculate information.
-
----
-
-## 3. Replaceable Components
-
-Modules should be replaceable.
-
-Example:
-
-analysis.py currently uses a rule engine.
-
-Future versions may use:
-
-- OpenAI
-- Claude
-- Gemini
-- Ollama
-
-without changing the dashboard.
-
----
-
-## 4. Stability First
-
-Every release should be:
-
-- Complete
-- Tested
-- Committed
-- Tagged
-
-before new work begins.
-
----
-
-# Current Architecture
-
-app.py
-
-↓
-
-dashboard.py
-
-↓
-
-├── dashboard_home.py
-
-├── dashboard_news.py
-
-└── dashboard_watchlist.py
-
-These modules consume:
-
-market.py
-
-history.py
-
-indicators.py
-
-announcements.py
-
-analysis.py
-
-config.py
-
-styles.py
-
----
-
-# Data Flow
-
-User enters ticker
-
-↓
+The application follows this flow:
 
 Market Data
 
 ↓
 
-Historical Prices
+Analysis
 
 ↓
 
-Technical Indicators
+Business Services
 
 ↓
 
-Dashboard
+Presentation
 
 ↓
 
-User
+Investor Decision
 
-Announcements follow a similar path.
-
-RSS Feed
-
-↓
-
-announcements.py
-
-↓
-
-analysis.py
-
-↓
-
-dashboard_news.py
-
-↓
-
-User
-
----
-
-# Development Workflow
-
-Every feature follows the same process.
-
-1. Design
-
-2. Build
-
-3. Test
-
-4. Commit
-
-5. Tag
-
-6. Release
-
----
-
-# Coding Standards
-
-Small files are preferred.
-
-Each file should have one responsibility.
-
-Avoid duplicate logic.
-
-Functions should be descriptive.
-
-Complex logic belongs in service modules.
-
----
-
-# Long-Term Roadmap
-
-Future capabilities include:
-
-- AI announcement summaries
-- Momentum Score (/100)
-- Portfolio tracking
-- Smart watchlists
-- Alert engine
-- AI trading assistant
-- Mobile optimisation
-- Dark mode
-
----
-
-# Project Goal
-
-MomentumHQ should become a daily decision-support platform for ASX investors.
-
-The application should answer:
-
-"What deserves my attention today?"
-
-rather than simply displaying market information.
+Every capability should strengthen this flow rather than bypass it.

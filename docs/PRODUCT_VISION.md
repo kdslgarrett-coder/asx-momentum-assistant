@@ -1,32 +1,35 @@
 # MomentumHQ Product Vision
 
-Version: 1.0
+Version: 2.0
 
 ---
 
 # Mission
 
-MomentumHQ exists to help ASX investors identify opportunities faster, understand market-moving events more clearly, and make better-informed decisions.
+MomentumHQ exists to help ASX investors discover opportunities, understand why they matter, and make better-informed investment decisions.
 
-The goal is not to replace investor judgement, but to reduce the time required to gather and interpret information.
+The goal is not to replace investor judgement, but to reduce the time required to discover, analyse and interpret market-moving information.
 
 ---
 
 # Vision
 
-MomentumHQ should become a personal market intelligence platform.
+MomentumHQ aims to become a personal market intelligence platform that acts as an analyst rather than a data terminal.
 
-Rather than forcing users to search multiple websites, the application should bring together:
+Rather than requiring investors to search multiple websites, MomentumHQ brings together:
 
-- Live market data
+- Market discovery
 - Technical analysis
 - Company announcements
-- AI-assisted interpretation
-- Portfolio monitoring
-- Watchlists
-- Alerts
+- Narrative interpretation
+- Opportunity monitoring
+- Continuous research
 
-into one integrated experience.
+into one integrated investor experience.
+
+The application should answer the question:
+
+> **"What deserves my attention today, and why?"**
 
 ---
 
@@ -52,54 +55,121 @@ Future audiences may include:
 
 ## Simplicity
 
-Present complex information in a way that is easy to understand.
+Present complex market information in a way that is easy to understand.
 
 ---
 
 ## Speed
 
-Help users identify important information within seconds.
+Help investors identify meaningful opportunities within seconds.
 
 ---
 
 ## Intelligence
 
-Explain why information matters, not just what happened.
+Explain why information matters, not simply what happened.
+
+---
+
+## Evidence First
+
+Every recommendation should be supported by verifiable market evidence.
+
+MomentumHQ should always explain the reasoning behind its conclusions.
 
 ---
 
 ## Trust
 
-Display the original market information alongside AI analysis.
+Present original market information alongside MomentumHQ analysis.
 
-Users should always be able to verify conclusions.
+Users should always be able to verify every recommendation.
 
 ---
 
 ## Transparency
 
-Clearly distinguish:
+Clearly distinguish between:
 
 - Market facts
 - Technical analysis
-- AI interpretation
-- Personal opinions
+- Narrative interpretation
+- Investor judgement
+
+---
+
+# The Analyst
+
+The Analyst is the central experience within MomentumHQ.
+
+Its purpose is to:
+
+- Discover opportunities.
+- Explain significance.
+- Provide supporting evidence.
+- Highlight risk.
+- Continuously monitor developments.
+- Help investors make informed decisions.
+
+Every new capability should strengthen The Analyst rather than compete with it.
 
 ---
 
 # What Makes MomentumHQ Different?
 
-Most market applications focus on displaying data.
+Most market applications focus on displaying information.
 
-MomentumHQ focuses on helping users interpret data.
+MomentumHQ focuses on helping investors interpret information.
 
-Instead of simply showing:
+Rather than presenting hundreds of announcements, MomentumHQ identifies the opportunities that deserve attention, explains why they matter, and continuously monitors them.
 
-- RSI
-- EMA
-- News
+The product philosophy is:
 
-MomentumHQ combines these into actionable insights.
+> **Story first. Evidence second.**
+
+---
+
+# Investor Workflows
+
+MomentumHQ is organised around investor decisions rather than software features.
+
+## 🌅 Morning Brief
+
+**Question answered:**
+
+> What deserves my attention today?
+
+---
+
+## 🔎 Research
+
+**Question answered:**
+
+> What do I need to know about this company?
+
+---
+
+## 📈 Opportunities
+
+**Question answered:**
+
+> What should I continue monitoring?
+
+---
+
+## 💡 Insights
+
+**Question answered:**
+
+> Why does this matter?
+
+---
+
+## 📢 Announcements
+
+**Question answered:**
+
+> What is the supporting evidence?
 
 ---
 
@@ -108,46 +178,70 @@ MomentumHQ combines these into actionable insights.
 MomentumHQ should eventually answer questions such as:
 
 - What deserves my attention today?
-- Which ASX stocks have the strongest momentum?
-- Which announcements are likely to move the market?
+- Which ASX companies have the strongest momentum?
+- Which announcements are most likely to move the market?
 - Is technical analysis confirming the news?
 - What risks should I be aware of?
+- What should I continue monitoring?
+- What has changed since yesterday?
 
 ---
 
 # Future Capabilities
 
-Potential future features include:
+## Discovery
 
-- AI-generated market briefings
-- Portfolio analytics
+- Enhanced Morning Brief
 - Momentum rankings
-- Insider transaction monitoring
+- Sector rotation analysis
+- AI-assisted market briefings
+
+---
+
+## Research
+
+- Advanced technical analysis
+- Historical comparisons
+- Company intelligence
+- Strategy backtesting
+
+---
+
+## Monitoring
+
+- Opportunity alerts
+- Portfolio monitoring
+- Insider transaction tracking
 - Dividend calendar
 - Economic calendar
-- Sector analysis
-- Watchlist alerts
-- Strategy backtesting
 
 ---
 
 # Success Criteria
 
-MomentumHQ succeeds when users can:
+MomentumHQ succeeds when investors can:
 
-- Understand a company faster.
-- Identify opportunities sooner.
+- Discover opportunities sooner.
+- Understand companies faster.
 - Spend less time searching for information.
 - Make more confident investment decisions.
+- Trust the reasoning behind every recommendation.
 
 ---
 
 # Development Philosophy
 
-Every new feature should answer one question:
+Every capability should answer one investor question or improve one investor workflow.
 
-"Does this help the investor make a better decision?"
+New functionality should strengthen the existing architecture rather than bypass it.
 
-If the answer is no, the feature should be reconsidered.
+MomentumHQ should remain:
 
-MomentumHQ should remain focused, practical, and trustworthy.
+- Practical
+- Transparent
+- Evidence-based
+- Deterministic where possible
+- Easy to understand
+- Focused on helping investors make better decisions
+
+If a proposed feature does not improve an investor's decision-making process, it should be reconsidered.

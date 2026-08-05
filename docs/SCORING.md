@@ -1,30 +1,52 @@
 # MomentumHQ Analyst Scoring Model
 
-## Purpose
-
-This document defines how the MomentumHQ Analyst evaluates opportunities.
-
-It does not define implementation details or algorithms.
-
-Instead it defines the reasoning process used to determine whether an opportunity deserves an investor's attention.
+Version: 2.0
 
 ---
 
-# The Analyst's Objective
+# Purpose
 
-The MomentumHQ Analyst answers one question.
+This document defines how the MomentumHQ Analyst evaluates opportunities.
+
+It does not define implementation details or scoring algorithms.
+
+Instead, it defines the reasoning process used to determine whether an opportunity deserves an investor's attention.
+
+---
+
+# The Analyst's Mission
+
+The MomentumHQ Analyst exists to answer one question.
 
 > **What deserves my attention today, and why?**
 
 Every recommendation must be supported by evidence.
 
-Confidence is earned by multiple pieces of evidence agreeing with each other.
+Confidence is earned when multiple independent pieces of evidence support the same conclusion.
+
+---
+
+# Discovery
+
+Before analysis begins, the Discovery Engine identifies companies worthy of investigation.
+
+Discovery may consider:
+
+- New ASX announcements
+- Unusual price action
+- Relative volume
+- Technical breakouts
+- Existing monitored opportunities
+
+Discovery determines **which companies should be analysed**.
+
+The Analyst then determines **whether they deserve attention**.
 
 ---
 
 # Analyst Workflow
 
-Every opportunity is evaluated in the following order.
+Every opportunity is evaluated using the following process.
 
 ## 1. Detect a Catalyst
 
@@ -50,9 +72,7 @@ Without a catalyst there is usually no reason for significant price movement.
 
 Not all catalysts are equally important.
 
-Examples:
-
-High Impact
+### High Impact
 
 - Resource upgrade
 - Major contract
@@ -60,13 +80,13 @@ High Impact
 - Significant discovery
 - Regulatory approval
 
-Medium Impact
+### Medium Impact
 
 - Quarterly report
 - Investor presentation
 - Operational update
 
-Low Impact
+### Low Impact
 
 - Director interest notice
 - Appendix filings
@@ -137,7 +157,7 @@ Higher risk reduces confidence.
 
 Confidence represents the Analyst's belief that an opportunity deserves further investigation.
 
-Confidence should be based on:
+Confidence should consider:
 
 - Quality of the catalyst
 - Strength of market confirmation
@@ -148,9 +168,51 @@ Confidence should never rely on a single signal.
 
 ---
 
+# Analyst Decisions
+
+The Analyst produces one of four outcomes.
+
+## Strong Buy
+
+High confidence.
+
+Strong catalyst.
+
+Strong market confirmation.
+
+Immediate investigation recommended.
+
+---
+
+## Watch
+
+Positive evidence exists.
+
+Further confirmation is required.
+
+Continue monitoring.
+
+---
+
+## Avoid
+
+Insufficient confirmation.
+
+No compelling investment opportunity exists at this time.
+
+---
+
+## Monitor
+
+Previously identified opportunity.
+
+Continue monitoring for meaningful change.
+
+---
+
 # Confidence Ratings
 
-95–100
+### 95–100
 
 Exceptional opportunity.
 
@@ -164,7 +226,7 @@ High conviction.
 
 ---
 
-80–94
+### 80–94
 
 High confidence.
 
@@ -172,7 +234,7 @@ Deserves immediate investigation.
 
 ---
 
-65–79
+### 65–79
 
 Good opportunity.
 
@@ -180,7 +242,7 @@ Worth watching closely.
 
 ---
 
-50–64
+### 50–64
 
 Interesting.
 
@@ -188,7 +250,7 @@ Requires additional confirmation.
 
 ---
 
-Below 50
+### Below 50
 
 Insufficient evidence.
 
@@ -198,7 +260,7 @@ Do not recommend.
 
 # Analyst Narrative
 
-Every recommendation should explain:
+Every recommendation should answer five questions.
 
 ## What happened?
 
@@ -214,7 +276,7 @@ Explain the business significance.
 
 ## What is the market doing?
 
-Explain price, volume and confirmation.
+Explain price action, volume and market confirmation.
 
 ---
 
@@ -245,16 +307,16 @@ The Analyst should:
 
 # Future Learning
 
-The scoring model should improve over time.
+The Analyst should improve over time.
 
 Future versions may learn:
 
 - Which catalyst types produce the strongest momentum.
 - Which sectors respond fastest.
 - Which confirmations are most reliable.
-- Which signals historically lead to successful opportunities.
+- Which signals historically produce successful opportunities.
 
-MomentumHQ should become smarter with experience.
+MomentumHQ should become smarter through evidence rather than opinion.
 
 ---
 
@@ -280,4 +342,4 @@ MomentumHQ should transform complexity into confidence.
 
 # Motto
 
-**Detect. Confirm. Explain. Prioritise.**
+**Discover. Confirm. Explain. Monitor.**
