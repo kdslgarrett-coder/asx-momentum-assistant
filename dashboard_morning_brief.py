@@ -1,6 +1,6 @@
 """
 MomentumHQ Morning Brief
-Version 3.2.0-dev
+Version 3.5.0-dev
 
 Presentation layer only.
 
@@ -29,6 +29,10 @@ def render() -> None:
 
     st.divider()
 
+    #
+    # Scan Status
+    #
+
     col1, col2 = st.columns([2, 1])
 
     with col1:
@@ -48,40 +52,47 @@ def render() -> None:
         st.markdown("### Status")
 
         if brief.status == "Complete":
+
             st.success("🟢 Complete")
+
         elif brief.status == "Scanning":
+
             st.warning("🟡 Scanning")
+
         else:
+
             st.error(f"🔴 {brief.status}")
 
     st.divider()
 
+    #
+    # Market Coverage
+    #
+
     st.markdown("### Market Coverage")
 
-    col1, col2, col3 = st.columns(3)
-
-    col1.metric(
-        "Announcements",
-        brief.announcements_reviewed,
-    )
-
-    col2.metric(
-        "Volume Events",
-        brief.volume_events,
-    )
-
-    col3.metric(
-        "Breakouts",
-        brief.breakouts,
+    st.metric(
+        "Companies Reviewed",
+        brief.companies_reviewed,
     )
 
     st.divider()
+
+    #
+    # Analyst Summary
+    #
 
     st.markdown("### Analyst Summary")
 
-    st.info(brief.analyst_summary)
+    st.info(
+        brief.analyst_summary
+    )
 
     st.divider()
+
+    #
+    # Opportunities
+    #
 
     st.markdown("### Today's Opportunities")
 
@@ -113,7 +124,7 @@ def render() -> None:
                 )
 
                 st.info(
-                    "Research page integration will be completed in the next capability."
+                    "Research page integration will be completed in a future capability."
                 )
 
     st.divider()
