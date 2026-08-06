@@ -1,6 +1,6 @@
 """
 MomentumHQ Morning Brief
-Version 3.5.0-dev
+Version 3.6.1-dev
 
 Presentation layer only.
 
@@ -115,7 +115,16 @@ def render() -> None:
                 ticker = (
                     opportunity.analysis["quote"]["symbol"]
                     .replace(".AX", "")
+                    .upper()
                 )
+
+                #
+                # Update the selected company.
+                # The dashboard text input now uses the
+                # same session_state key ("ticker"), so
+                # this automatically synchronises the
+                # Research workspace.
+                #
 
                 st.session_state.ticker = ticker
 
@@ -123,9 +132,12 @@ def render() -> None:
                     f"{ticker} loaded into Research."
                 )
 
-                st.info(
-                    "Research page integration will be completed in a future capability."
-                )
+                #
+                # Restart the app so the Research page
+                # receives the updated ticker.
+                #
+
+                st.rerun()
 
     st.divider()
 

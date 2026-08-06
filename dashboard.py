@@ -1,6 +1,6 @@
 """
 MomentumHQ Dashboard
-Version 3.1.0-dev
+Version 3.2.1-dev
 
 Application workspace orchestration.
 """
@@ -37,14 +37,36 @@ def render() -> None:
     """
 
     st.title(APP_NAME)
-
     st.caption(APP_TAGLINE)
-
     st.caption(f"Version {VERSION}")
 
     st.divider()
 
-    st.session_state.setdefault("ticker", DEFAULT_TICKER)
+    #
+    # Initialise session state.
+    #
+
+    st.session_state.setdefault(
+        "ticker",
+        DEFAULT_TICKER,
+    )
+
+    #
+    # Apply any pending ticker BEFORE
+    # creating the text input widget.
+    #
+
+    if "pending_ticker" in st.session_state:
+
+        st.session_state.ticker = (
+            st.session_state.pending_ticker
+        )
+
+        del st.session_state["pending_ticker"]
+
+    #
+    # User ticker entry.
+    #
 
     ticker = (
         st.text_input(
@@ -70,16 +92,22 @@ def render() -> None:
         render_morning_brief()
 
     with research_tab:
-        render_research(ticker)
+        render_research(
+            st.session_state.ticker
+        )
 
     with opportunities_tab:
         render_opportunities()
 
     with insights_tab:
-        render_insights(ticker)
+        render_insights(
+            st.session_state.ticker
+        )
 
     with announcements_tab:
-        render_news(ticker)
+        render_news(
+            st.session_state.ticker
+        )
 
     st.divider()
 
