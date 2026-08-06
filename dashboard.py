@@ -1,6 +1,6 @@
 """
 MomentumHQ Dashboard
-Version 3.2.1-dev
+Version 3.3.0-dev
 
 Application workspace orchestration.
 """
@@ -20,12 +20,14 @@ from dashboard_insights import render as render_insights
 from dashboard_news import render as render_news
 from dashboard_opportunities import render as render_opportunities
 from dashboard_morning_brief import render as render_morning_brief
+from dashboard_scout import render as render_scout
 
 
 TABS = (
     "🌅 Morning Brief",
     "🔎 Research",
     "📈 Opportunities",
+    "🔍 Scout Diagnostics",
     "💡 Insights",
     "📢 Announcements",
 )
@@ -37,7 +39,9 @@ def render() -> None:
     """
 
     st.title(APP_NAME)
+
     st.caption(APP_TAGLINE)
+
     st.caption(f"Version {VERSION}")
 
     st.divider()
@@ -52,7 +56,7 @@ def render() -> None:
     )
 
     #
-    # Apply any pending ticker BEFORE
+    # Apply any pending ticker before
     # creating the text input widget.
     #
 
@@ -65,7 +69,7 @@ def render() -> None:
         del st.session_state["pending_ticker"]
 
     #
-    # User ticker entry.
+    # Ticker input.
     #
 
     ticker = (
@@ -84,6 +88,7 @@ def render() -> None:
         morning_brief_tab,
         research_tab,
         opportunities_tab,
+        scout_tab,
         insights_tab,
         announcements_tab,
     ) = st.tabs(TABS)
@@ -98,6 +103,9 @@ def render() -> None:
 
     with opportunities_tab:
         render_opportunities()
+
+    with scout_tab:
+        render_scout()
 
     with insights_tab:
         render_insights(
