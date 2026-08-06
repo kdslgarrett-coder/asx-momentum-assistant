@@ -1,12 +1,13 @@
 """
 MomentumHQ Scout Engine
-Version 4.0.0-dev
+Version 4.2.0-dev
 
 Coordinates the MomentumHQ Scout Network.
 
-The Scout Engine orchestrates individual Scouts,
-collects evidence, builds Candidate objects and
-returns a prioritised list for the MomentumHQ Analyst.
+The Scout Engine orchestrates all registered
+Scouts, collects evidence, builds Candidate
+objects and returns a prioritised list for the
+MomentumHQ Analyst.
 
 The Scout Engine does not analyse opportunities.
 
@@ -15,10 +16,44 @@ Its responsibility is to discover them.
 
 from __future__ import annotations
 
+from collections.abc import Callable
+from typing import Any
+
+import announcement_scout
+import price_scout
+
 from candidate import Candidate
 from candidate_prioritiser import prioritise
 
-import announcement_scout
+
+#
+# Registered Scouts.
+#
+# Every Scout exposes:
+#
+#     scan() -> list[Signal]
+#
+# New Scouts only need to be added to this list.
+#
+
+_REGISTERED_SCOUTS: list[Callable[[], list[Any]]] = [
+    announcement_scout.scan,
+    price_scout.scan,
+]
+
+
+def _collect_signals() -> list[Any]:
+    """
+    Execute all registered Scouts and
+    return their combined evidence.
+    """
+
+    signals: list[Any] = []
+
+    for scout in _REGISTERED_SCOUTS:
+        signals.extend(scout())
+
+    return signals
 
 
 def scan() -> list[Candidate]:
@@ -31,26 +66,7 @@ def scan() -> list[Candidate]:
         Prioritised Scout candidates.
     """
 
-    signals = []
-
-    #
-    # Announcement Scout
-    #
-
-    signals.extend(
-        announcement_scout.scan()
-    )
-
-    #
-    # Future Scouts
-    #
-    # signals.extend(price_scout.scan())
-    # signals.extend(volume_scout.scan())
-    # signals.extend(breakout_scout.scan())
-    # signals.extend(sector_scout.scan())
-    #
-
-    return prioritise(signals)
+    return prioritise(_collect_signals())
 
 
 def latest() -> list[Candidate]:
@@ -58,7 +74,7 @@ def latest() -> list[Candidate]:
     Return the latest Scout candidates.
 
     Alias for scan() while the Scout
-    remains stateless.
+    Engine remains stateless.
     """
 
     return scan()
@@ -71,3 +87,12 @@ def count() -> int:
     """
 
     return len(scan())
+
+
+def signal_count() -> int:
+    """
+    Return the total number of Scout
+    signals collected.
+    """
+
+    return len(_collect_signals())
