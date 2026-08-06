@@ -1,6 +1,6 @@
 """
 MomentumHQ Market Data
-Version 2.1.0
+Version 2.2.0
 
 Provides live market data for MomentumHQ.
 
@@ -21,6 +21,14 @@ import streamlit as st
 import yfinance as yf
 
 
+#
+# Number of trading days used when
+# calculating average trading volume.
+#
+
+VOLUME_LOOKBACK_DAYS = 20
+
+
 @st.cache_data(ttl=300)
 def get_quote(symbol: str) -> dict[str, Any] | None:
     """
@@ -37,20 +45,32 @@ def get_quote(symbol: str) -> dict[str, Any] | None:
         ticker = yf.Ticker(symbol)
 
         info = ticker.info
-        history = ticker.history(period="2d")
+
+        #
+        # Retrieve enough history for both
+        # price comparison and average volume.
+        #
+
+        history = ticker.history(
+            period="1mo"
+        )
 
         if history.empty:
             return None
 
         latest = history.iloc[-1]
 
-        previous_close = (
-            float(history.iloc[-2]["Close"])
-            if len(history) > 1
-            else float(latest["Close"])
-        )
+        if len(history) > 1:
+            previous_close = float(
+                history.iloc[-2]["Close"]
+            )
+        else:
+            previous_close = float(
+                latest["Close"]
+            )
 
         price = float(latest["Close"])
+
         change = price - previous_close
 
         change_percent = (
@@ -59,7 +79,31 @@ def get_quote(symbol: str) -> dict[str, Any] | None:
             else 0.0
         )
 
+        #
+        # Volume statistics
+        #
+
+        volume = int(latest["Volume"])
+
+        volume_history = history.tail(
+            VOLUME_LOOKBACK_DAYS
+        )["Volume"]
+
+        average_volume = int(
+            volume_history.mean()
+        )
+
+        volume_ratio = (
+            volume / average_volume
+            if average_volume
+            else 0.0
+        )
+
         return {
+
+            #
+            # Company
+            #
 
             "symbol": symbol,
 
@@ -68,38 +112,50 @@ def get_quote(symbol: str) -> dict[str, Any] | None:
                 symbol,
             ),
 
+            #
+            # Price
+            #
+
             "price": price,
 
             "change": change,
 
-            #
-            # Numeric value for Scouts
-            #
-
             "change_percent": change_percent,
-
-            #
-            # Formatted value for UI
-            #
 
             "percent": (
                 f"{change_percent:+.2f}%"
             ),
 
-            "volume": int(latest["Volume"]),
-
             "previous_close": previous_close,
 
-            "high": float(latest["High"]),
+            "high": float(
+                latest["High"]
+            ),
 
-            "low": float(latest["Low"]),
+            "low": float(
+                latest["Low"]
+            ),
+
+            #
+            # Volume
+            #
+
+            "volume": volume,
+
+            "average_volume": average_volume,
+
+            "volume_ratio": volume_ratio,
+
+            #
+            # Market
+            #
 
             "market_cap": info.get(
                 "marketCap"
             ),
 
             #
-            # Retrieval metadata
+            # Metadata
             #
 
             "retrieved_at": datetime.now(),
